@@ -1,31 +1,26 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-public class Order {
+public class Order {	
 
-	private final ArrayList<Float> ORDERED_PIECE_LENGTHS;
-	private final int[] ORDERED_PIECE_QUANTITIES;
-
+	//Unique lengths as floats and quantities as integers
+	private final HashMap<Float, Integer> ORDERED_LENGTHS_AND_QUANTITIES;	
+	private HashMap<Float, Integer> currentOrderedLengthsAndQuantities;
+	
 	private ArrayList<CutActivity> orderCutActivities;
-	private int[] currentPieceQuantities;
 
-	public Order(ArrayList<Float> requestedPieceLengths, int[] requestedPieceQuantities) 
+	public Order(HashMap<Float, Integer> orderedLengthsAndQuantities) 
 	{
-		if(requestedPieceLengths.size() == requestedPieceQuantities.length && requestedPieceLengths.size() > 0) 
-		{
-			ORDERED_PIECE_LENGTHS = requestedPieceLengths;
-			ORDERED_PIECE_QUANTITIES = requestedPieceQuantities;			
-		}
-		else
-		{
-			throw new IllegalArgumentException("The number of requested Piece Lengths " + requestedPieceLengths.size() + 
-					" don't match the number of requested Piece Quantities " + requestedPieceQuantities.length + " or one of them is empty.");
-		}
-
+		ORDERED_LENGTHS_AND_QUANTITIES = orderedLengthsAndQuantities;
 		orderCutActivities = new ArrayList<CutActivity>();
 
-		currentPieceQuantities = new int[ORDERED_PIECE_QUANTITIES.length];
+		currentOrderedLengthsAndQuantities = new HashMap<Float, Integer>();		
+		for(Float length : ORDERED_LENGTHS_AND_QUANTITIES.keySet()) 
+		{
+			currentOrderedLengthsAndQuantities.put(length, 0);
+		}
 	}
 
 	/**
@@ -40,11 +35,8 @@ public class Order {
 		{
 			for(Float cutLength : cutActivity.getCutLengths()) 
 			{
-				//Lookup the cutLength's index in the ordered lengths
-				int index = ORDERED_PIECE_LENGTHS.indexOf(cutLength);
-
 				//Make sure that adding the cutLength to the Order won't exceed the ordered amounds
-				if(!(currentPieceQuantities[index] < ORDERED_PIECE_QUANTITIES[index])) 
+				if(currentOrderedLengthsAndQuantities.get(cutLength) >= ORDERED_LENGTHS_AND_QUANTITIES.get(cutLength)) 
 				{
 					return false; 
 				}
@@ -53,10 +45,7 @@ public class Order {
 			//Update the current piece quantities
 			for(Float cutLength : cutActivity.getCutLengths()) 
 			{
-				//Lookup the cutLength's index in the ordered lengths
-				int index = ORDERED_PIECE_LENGTHS.indexOf(cutLength);
-				
-				currentPieceQuantities[index] += 1;
+				currentOrderedLengthsAndQuantities.put(cutLength, currentOrderedLengthsAndQuantities.get(cutLength) + 1);
 			}
 
 			orderCutActivities.add(cutActivity);
@@ -81,23 +70,65 @@ public class Order {
 			//Update the current piece quantities
 			for(Float cutLength : cutActivity.getCutLengths()) 
 			{
-				//Lookup the cutLength's index in the ordered lengths
-				int index = ORDERED_PIECE_LENGTHS.indexOf(cutLength);
-				
-				currentPieceQuantities[index] -= 1;				
+				currentOrderedLengthsAndQuantities.put(cutLength, currentOrderedLengthsAndQuantities.get(cutLength) - 1);
 			}
 			return true;
 		}
 		return false;
 	}
 
+	/**
+	 * Get Cut Activities
+	 * @return CutActivities
+	 */
 	public ArrayList<CutActivity> getCutActivities() 
 	{
 		return (ArrayList<CutActivity>) orderCutActivities.clone();
 	}
 
+	/**
+	 * Is the Order complete
+	 * @return boolean
+	 */
 	public boolean completeOrder() 
+	{		
+		return currentOrderedLengthsAndQuantities.entrySet().equals(ORDERED_LENGTHS_AND_QUANTITIES.entrySet());
+	}
+	
+	/**
+	 * Convert Order to string
+	 * @return string representation of Order
+	 */
+	public String toString() 
 	{
-		return currentPieceQuantities.equals(ORDERED_PIECE_QUANTITIES);
+		String string = "Order: \n";
+		for(CutActivity cutActivity : orderCutActivities) 
+		{
+			string = string + cutActivity.toString() + "\n";
+		}
+		
+		return string;
+	}
+	
+	/**
+	 * @param Object obj
+	 * @return boolean, if same route true else false;
+	 */
+	public boolean equals(Object obj) 
+	{
+		if(!(obj instanceof Order)) 
+		{
+			return false;
+		}
+		
+		for(int i = 0; i < orderCutActivities.size(); i++) 
+		{
+			if(!orderCutActivities.get(i).equals(((Order)obj).getCutActivities().get(i)))
+			{
+				return false;				
+			}
+		}
+		
+		return true;
 	}
 }

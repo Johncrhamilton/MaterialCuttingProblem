@@ -5,22 +5,20 @@ import java.util.ArrayList;
 public class CutActivity {
 
 	private final float STOCK_LENGTH;
-	private final float STOCK_COST;
 
 	private ArrayList<Float> cutLengths;
 
 	private float availableSpace;
 
-	public CutActivity(float stockLength, float stockCost)
+	public CutActivity(float stockLength)
 	{		
-		if(stockLength > 0 && stockCost > 0) 
+		if(stockLength > 0) 
 		{
-			STOCK_LENGTH = stockLength;
-			STOCK_COST = stockCost;			
+			STOCK_LENGTH = stockLength;	
 		}
 		else 
 		{
-			throw new IllegalArgumentException("Stock Length " + stockLength + " and Stock Cost " + stockCost + " must be greater than 0");
+			throw new IllegalArgumentException("Stock Length " + stockLength + " must be greater than 0");
 		}
 		
 		cutLengths = new ArrayList<Float>();		
@@ -106,19 +104,47 @@ public class CutActivity {
 		return count;
 	}
 
+	/**
+	 * Get Cut Lengths
+	 * @return cutLengths
+	 */
 	public ArrayList<Float> getCutLengths() 
 	{
 		return cutLengths;
 	}
 	
+	/**
+	 * Get Stock Length
+	 * @return StockLength
+	 */
 	public float getStockLength() 
 	{
 		return STOCK_LENGTH;
 	}
-	
-	public float getStockCost() 
+
+	/**
+	 * Get Available Space
+	 * @return AvailableSpace
+	 */
+	public float getAvailableSpace() 
 	{
-		return STOCK_COST;
+		return availableSpace;
+	}
+	
+	/**
+	 * Convert Cut Activity to string
+	 * @return string representation of CutActivity
+	 */
+	public String toString() 
+	{
+		String string = "[ Stock length " + STOCK_LENGTH + ": ";
+		for(Float cutLength : cutLengths) 
+		{
+			string = string + cutLength + " ";
+		}
+		string = string + "]";
+		
+		return string;
 	}
 	
 	/**
