@@ -30,6 +30,7 @@ public class RandomSearch implements SearchAlgorithm {
 				oneIteration();
 				currentIteration++;
 			}
+			System.out.println("Number of iterations: " + currentIteration);
 		}
 		else 
 		{
@@ -49,6 +50,9 @@ public class RandomSearch implements SearchAlgorithm {
 		return bestOrder;
 	}
 	
+	/**
+	 * One iteration of random search
+	 */
 	private void oneIteration() 
 	{
 		Order randomOrder = materialCuttingProblem.generateRandomValidOrder();

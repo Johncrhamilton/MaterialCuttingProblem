@@ -8,7 +8,7 @@ public class Order {
 	//Unique lengths as floats and quantities as integers
 	private final HashMap<Float, Integer> ORDERED_LENGTHS_AND_QUANTITIES;	
 	private HashMap<Float, Integer> currentOrderedLengthsAndQuantities;
-	
+
 	private ArrayList<CutActivity> orderCutActivities;
 
 	public Order(HashMap<Float, Integer> orderedLengthsAndQuantities) 
@@ -54,7 +54,47 @@ public class Order {
 		}
 		return false;
 	}
+	
+	/**
+	 * Try add all cutActivities given 
+	 * @param cutActivities
+	 * @return boolean, were all the elements added
+	 */
+	public boolean addAll(ArrayList<CutActivity> cutActivities) 
+	{
+		for(CutActivity cutActivity : cutActivities) 
+		{
+			if(!addCutActivity(cutActivity)) 
+			{
+				return false;
+			}
+		}
+		return true;
+	}
 
+	/**
+	 * Remove a cut activity from the order and adjust the current piece quantities
+	 * @param index
+	 * @return boolean, was the element removed
+	 */
+	public boolean removeCutActivity(int index) 
+	{
+		//Don't remove if the order is empty or index is out of bounds
+		if(orderCutActivities.size() > 0 && orderCutActivities.size() > index && index >= 0) 
+		{
+			CutActivity cutActivity = orderCutActivities.get(index);
+			orderCutActivities.remove(index);
+			
+			//Update the current piece quantities
+			for(Float cutLength : cutActivity.getCutLengths()) 
+			{
+				currentOrderedLengthsAndQuantities.put(cutLength, currentOrderedLengthsAndQuantities.get(cutLength) - 1);
+			}
+			return true;	
+		}
+		return false;
+	}
+	
 	/**
 	 * Remove a cut activity from the order and adjust the current piece quantities
 	 * @param cutActivity
@@ -78,12 +118,22 @@ public class Order {
 	}
 
 	/**
+	 * Get CutActivity at index
+	 * @param index
+	 * @return CutActivity
+	 */
+	public CutActivity getCutActivity(int index) 
+	{
+		return orderCutActivities.get(index);
+	}
+
+	/**
 	 * Get Cut Activities
 	 * @return CutActivities
 	 */
 	public ArrayList<CutActivity> getCutActivities() 
 	{
-		return (ArrayList<CutActivity>) orderCutActivities.clone();
+		return orderCutActivities;
 	}
 
 	/**
@@ -94,7 +144,7 @@ public class Order {
 	{		
 		return currentOrderedLengthsAndQuantities.entrySet().equals(ORDERED_LENGTHS_AND_QUANTITIES.entrySet());
 	}
-	
+
 	/**
 	 * Convert Order to string
 	 * @return string representation of Order
@@ -106,10 +156,10 @@ public class Order {
 		{
 			string = string + cutActivity.toString() + "\n";
 		}
-		
+
 		return string;
 	}
-	
+
 	/**
 	 * @param Object obj
 	 * @return boolean, if same route true else false;
@@ -120,7 +170,7 @@ public class Order {
 		{
 			return false;
 		}
-		
+
 		for(int i = 0; i < orderCutActivities.size(); i++) 
 		{
 			if(!orderCutActivities.get(i).equals(((Order)obj).getCutActivities().get(i)))
@@ -128,7 +178,24 @@ public class Order {
 				return false;				
 			}
 		}
-		
+
 		return true;
+	}
+
+	/**
+	 * Creates a clone of the order
+	 * @return Order
+	 */
+	public Order clone() 
+	{
+		Order copy = new Order(ORDERED_LENGTHS_AND_QUANTITIES);
+		ArrayList<CutActivity> orderCutActivities = (ArrayList<CutActivity>) this.orderCutActivities.clone();
+
+		for(int i = 0; i < orderCutActivities.size(); i++) 
+		{
+			copy.addCutActivity(orderCutActivities.get(i));
+		}
+
+		return copy;
 	}
 }

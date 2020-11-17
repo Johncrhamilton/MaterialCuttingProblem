@@ -51,7 +51,7 @@ public class CutActivity {
 	 */
 	public boolean removeCutLength(int index) 
 	{
-		if(cutLengths.size() > index) 
+		if(cutLengths.size() > index && index >= 0) 
 		{
 			availableSpace += cutLengths.get(index);
 			cutLengths.remove(index);

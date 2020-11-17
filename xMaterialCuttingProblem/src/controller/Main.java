@@ -5,6 +5,7 @@ import java.util.HashMap;
 import model.MaterialCuttingProblem;
 import model.SEARCHMETHOD;
 import model.SearchAlgorithm;
+import model.search.algorithms.LocalSearch;
 import model.search.algorithms.RandomSearch;
 import model.Order;
 
@@ -12,14 +13,34 @@ public class Main {
 
 	public static void main(String[] args) 
 	{
-		//Material Cutting Problem One
+		//Material Cutting Problem Main
+		//float[] stockLengths = { 120, 115, 110, 105, 100 };
+		//float[] stockCosts = { 12, 11.5f, 11, 10.5f, 10 };
+		//float[] orderLengths = {21, 22, 24, 25, 27, 29, 30, 31, 32, 33, 34, 35, 38, 39, 42, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 59, 60, 61, 63, 65, 66, 67};
+		//int[] orderQuantities = {13, 15, 7, 5, 9, 9, 3, 15, 18, 17, 4, 17, 20, 9, 4, 19, 4, 12, 15, 3, 20, 14, 15, 6, 4, 7, 5, 19, 19, 6, 3, 7, 20, 5, 10, 17};
+
+		//Material Cutting Problem Example
 		float[] stockLengths = { 100, 80, 50 };
 		float[] stockCosts = { 250, 175, 100 };
 		float[] orderLengths = {20, 30, 25};
 		int[] orderQuantities = {5, 5, 7};
 
+		//Material Cutting Problem One
+		//float[] stockLengths = { 10, 13, 15 };
+		//float[] stockCosts = { 100, 130, 150 };
+		//float[] orderLengths = {3, 4, 5, 6, 7, 8, 9, 10};
+		//int[] orderQuantities = {5, 2, 1, 2, 4, 2, 1, 3};
+
+		//Material Cutting Problem Two
+		//float[] stockLengths = { 4300, 4250, 4150, 3950, 3800, 3700, 3550, 3500 };
+		//float[] stockCosts = { 86, 85, 83, 79, 68, 66, 64, 63 };
+		//float[] orderLengths = {2350, 2250, 2200, 2100, 2050, 2000, 1950, 1900, 1850, 1700, 1650, 1350, 1300, 1250, 1200, 1150, 1100, 1050};
+		//int[] orderQuantities = {2, 4, 4, 15, 6, 11, 6, 15, 13, 5, 2, 9, 3, 6, 10, 4, 8, 3};
+
 		MaterialCuttingProblem materialCuttingProblemOne = createMaterialCuttingProblem(stockLengths, stockCosts, orderLengths, orderQuantities);
+
 		evaluateMaterialCuttingProblem(materialCuttingProblemOne, SEARCHMETHOD.RANDOM_SEARCH);
+		evaluateMaterialCuttingProblem(materialCuttingProblemOne, SEARCHMETHOD.LOCAL_SEARCH);
 	}
 
 	private static void evaluateMaterialCuttingProblem(MaterialCuttingProblem materialCuttingProblem, SEARCHMETHOD searchMethod) 
@@ -33,7 +54,7 @@ public class Main {
 			selectedAlgorithm = new RandomSearch(materialCuttingProblem);
 			break;
 		case LOCAL_SEARCH:
-			selectedAlgorithm = null;
+			selectedAlgorithm = new LocalSearch(materialCuttingProblem);
 			break;
 		case BASE_EVOLUTION_SEARCH:
 			selectedAlgorithm = null;
@@ -46,10 +67,9 @@ public class Main {
 		}
 
 		Order bestOrder = selectedAlgorithm.bestOrder();
-		System.out.println("Best Order Found: \n");
-		System.out.println(bestOrder);
+		System.out.println("Best Order Found: \n" + bestOrder);
 		System.out.println("Best Order Cost: " + materialCuttingProblem.calculateCostOfOrder(bestOrder));
-		
+
 		System.out.println("----------------------------------------------------\n");
 	}
 
