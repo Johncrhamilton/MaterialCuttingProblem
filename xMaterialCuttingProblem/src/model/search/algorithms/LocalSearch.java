@@ -58,8 +58,10 @@ public class LocalSearch implements SearchAlgorithm {
 	 */
 	private void oneIteration() 
 	{
+		//Create neighbourhood
 		ArrayList<Order> neighbourhood = generateNeighbourhood(bestOrder);
 		
+		//Find best neighbour in the neighbourhood
 		Order bestNeighbour = bestNeighbourStepFunction(neighbourhood);
 		double bestNeighbourCost = materialCuttingProblem.calculateCostOfOrder(bestNeighbour);
 		
