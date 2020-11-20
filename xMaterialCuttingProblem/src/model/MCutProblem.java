@@ -7,13 +7,13 @@ import java.util.Iterator;
 
 public class MCutProblem {
 
-	public final float shortestOrderedLength;	
 	//Unique lengths as floats and costs as floats
 	private final HashMap<Float, Float> STOCK_LENGTHS_AND_COSTS;
 	//Unique lengths as floats and quantities as integers
 	private final HashMap<Float, Integer> ORDERED_LENGTHS_AND_QUANTITIES;
 
-	private ArrayList<Float> allOrderLengths;
+	private final ArrayList<Float> allOrderLengths;
+	private final float shortestOrderedLength;
 
 	public MCutProblem(HashMap<Float, Float> stockLengthsAndCosts, HashMap<Float, Integer> orderedLengthsAndQuantities) 
 	{

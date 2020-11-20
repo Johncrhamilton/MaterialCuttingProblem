@@ -177,7 +177,7 @@ public class Order {
 	}
 
 	/**
-	 * Creates a clone of the order
+	 * Creates a clone of the Order
 	 * @return Order
 	 */
 	public Order clone() 

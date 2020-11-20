@@ -16,7 +16,7 @@ public class LocalSearch implements SearchAlgorithm {
 	private Order bestOrder;
 	private double bestOrderCost;
 
-	public LocalSearch(MCutProblem materialCuttingProblem) 
+	public LocalSearch(MCutProblem materialCuttingProblem)
 	{
 		this.materialCuttingProblem = materialCuttingProblem;
 	}
@@ -83,49 +83,35 @@ public class LocalSearch implements SearchAlgorithm {
 		ArrayList<Order> Neighbourhood = new ArrayList<Order>();
 
 		//Create neighbours to the given order
-		while(Neighbourhood.size() < ModelConstants.NEIGHBOURHOOD_SIZE) 
+		for(int i = 0; i < order.size() - 1; i++) 
 		{
-			for(int i = 0; i < order.size(); i++) 
+			int j = i + 1;
+			Order neighbour = order.clone();
+
+			//Sellect two activities to change
+			CutActivity activityOne = neighbour.get(i).clone();
+			CutActivity activityTwo = neighbour.get(j).clone();
+
+			//Remove them
+			neighbour.remove(activityOne);
+			neighbour.remove(activityTwo);
+
+			//Fill a activityCutLengths list with their lengths
+			ArrayList<Float> activityCutLengths = new ArrayList<Float>();
+			activityCutLengths.addAll(activityOne.getLengths());
+			activityCutLengths.addAll(activityTwo.getLengths());
+
+			//Create and add new CutActivities from activityCutLengths
+			neighbour.addAll(materialCuttingProblem.generateRandomValidCutActivities(activityCutLengths));
+
+			//Add neighbour to neighbourhood
+			if(neighbour.isComplete())
 			{
-				//int j = i + ModelConstants.RANDOM.nextInt(order.size() - i);
-				int j = i + 1;
-				
-				if(i < j) 
-				{
-					Order neighbour = order.clone();
-
-					//Sellect two activities to change
-					CutActivity activityOne = neighbour.get(i);
-					CutActivity activityTwo = neighbour.get(j);
-
-					//Remove them
-					neighbour.remove(activityOne);
-					neighbour.remove(activityTwo);
-
-					//Fill a activityCutLengths list with their lengths
-					ArrayList<Float> activityCutLengths = new ArrayList<Float>();
-					activityCutLengths.addAll(activityOne.getLengths());
-					activityCutLengths.addAll(activityTwo.getLengths());
-
-					//Create and add new CutActivities from activityCutLengths
-					neighbour.addAll(materialCuttingProblem.generateRandomValidCutActivities(activityCutLengths));
-
-					//Add neighbour to neighbourhood
-					if(neighbour.isComplete()) 
-					{
-						Neighbourhood.add(neighbour);
-					}
-					else 
-					{
-						throw new OrderException("Tried to add order which is not complete." + neighbour.toString());
-					}
-
-					//If complete neighbourhood return
-					if(Neighbourhood.size() == ModelConstants.NEIGHBOURHOOD_SIZE) 
-					{
-						return Neighbourhood;
-					}
-				}
+				Neighbourhood.add(neighbour);
+			}
+			else
+			{
+				throw new OrderException("Tried to add order which is not complete." + neighbour.toString());
 			}
 		}
 

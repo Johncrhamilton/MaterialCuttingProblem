@@ -152,4 +152,21 @@ public class CutActivity {
 		
 		return true;
 	}
+	
+	/**
+	 * Creates a clone of the CutActivity
+	 * @return CutActivity
+	 */
+	public CutActivity clone() 
+	{
+		CutActivity copy = new CutActivity(STOCK_LENGTH);
+		ArrayList<Float> lengths = (ArrayList<Float>) this.lengths.clone();
+
+		for(int i = 0; i < lengths.size(); i++) 
+		{
+			copy.add(lengths.get(i));
+		}
+
+		return copy;
+	}
 }

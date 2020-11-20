@@ -198,7 +198,7 @@ public class BaseEvolutionAlgorithm  implements SearchAlgorithm {
 		//Copy in first parent's cut activities
 		for(int i = 0; i < copyLengthFirstParent; i++) 
 		{
-			CutActivity cutActivity = firstParent.get(firstParentIndex);
+			CutActivity cutActivity = firstParent.get(firstParentIndex).clone();
 			child.add(cutActivity);
 
 			for(float length : cutActivity.getLengths()) 
@@ -257,9 +257,9 @@ public class BaseEvolutionAlgorithm  implements SearchAlgorithm {
 		if(ModelConstants.RANDOM.nextDouble() < ModelConstants.MUTATION_PROBABILITY) 
 		{
 			//Randomly select two cut activites from order and remove the two cut activites from order
-			CutActivity randomActivityOne = order.get(ModelConstants.RANDOM.nextInt(order.size()));			
+			CutActivity randomActivityOne = order.get(ModelConstants.RANDOM.nextInt(order.size())).clone();			
 			order.remove(randomActivityOne);			
-			CutActivity randomActivityTwo = order.get(ModelConstants.RANDOM.nextInt(order.size()));
+			CutActivity randomActivityTwo = order.get(ModelConstants.RANDOM.nextInt(order.size())).clone();
 			order.remove(randomActivityTwo);			
 
 			//Create new cut activites from their cut lengths
