@@ -1,18 +1,18 @@
 package model.search.algorithms;
 
-import model.MaterialCuttingProblem;
+import model.MCutProblem;
 import model.ModelConstants;
 import model.Order;
 import model.SearchAlgorithm;
 
 public class RandomSearch implements SearchAlgorithm {
 
-	private MaterialCuttingProblem materialCuttingProblem;
+	private MCutProblem materialCuttingProblem;
 	
 	private Order bestOrder;
 	private double bestOrderCost;
 	
-	public RandomSearch(MaterialCuttingProblem materialCuttingProblem) 
+	public RandomSearch(MCutProblem materialCuttingProblem) 
 	{
 		this.materialCuttingProblem = materialCuttingProblem;
 	}

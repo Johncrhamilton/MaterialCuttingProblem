@@ -3,19 +3,20 @@ package model.search.algorithms;
 import java.util.ArrayList;
 
 import model.CutActivity;
-import model.MaterialCuttingProblem;
+import model.MCutProblem;
 import model.ModelConstants;
 import model.Order;
+import model.OrderNotCompleteException;
 import model.SearchAlgorithm;
 
 public class LocalSearch implements SearchAlgorithm {
 
-	private MaterialCuttingProblem materialCuttingProblem;
-	
+	private MCutProblem materialCuttingProblem;
+
 	private Order bestOrder;
 	private double bestOrderCost;
-	
-	public LocalSearch(MaterialCuttingProblem materialCuttingProblem) 
+
+	public LocalSearch(MCutProblem materialCuttingProblem) 
 	{
 		this.materialCuttingProblem = materialCuttingProblem;
 	}
@@ -24,8 +25,8 @@ public class LocalSearch implements SearchAlgorithm {
 	{
 		bestOrder = materialCuttingProblem.generateRandomValidOrder();
 		bestOrderCost = materialCuttingProblem.calculateCostOfOrder(bestOrder);
-		
-		if(ModelConstants.LIMITED_ITERATIONS) 
+
+		if(ModelConstants.LIMITED_ITERATIONS)
 		{
 			int currentIteration = 0;
 			while(currentIteration < ModelConstants.ITERATION_LIMIT) 
@@ -42,14 +43,14 @@ public class LocalSearch implements SearchAlgorithm {
 
 			//Time Limit in milliseconds
 			long timeLimit = currentTime + ModelConstants.TIME_LIMIT;
-			
+
 			while(currentTime < timeLimit) 
 			{
 				oneIteration();
 				currentTime = java.lang.System.currentTimeMillis();
 			}
 		}
-		
+
 		return bestOrder;
 	}
 
@@ -60,81 +61,97 @@ public class LocalSearch implements SearchAlgorithm {
 	{
 		//Create neighbourhood
 		ArrayList<Order> neighbourhood = generateNeighbourhood(bestOrder);
-		
+
 		//Find best neighbour in the neighbourhood
 		Order bestNeighbour = bestNeighbourStepFunction(neighbourhood);
 		double bestNeighbourCost = materialCuttingProblem.calculateCostOfOrder(bestNeighbour);
-		
+
 		if(bestNeighbourCost < bestOrderCost) 
 		{
 			bestOrder = bestNeighbour;
 			bestOrderCost = bestNeighbourCost;
 		}
 	}
-	
+
 	/**
 	 * Generate a Neighbourhood for a given order
 	 * @param order
-	 * @return ArrayList<Order>
+	 * @return Neighbourhood of orders
 	 */
 	private ArrayList<Order> generateNeighbourhood(Order order)
 	{
 		ArrayList<Order> Neighbourhood = new ArrayList<Order>();
-		
+
 		//Create neighbours to the given order
-		for(int i = 0; i < order.getCutActivities().size(); i++) 
+		while(Neighbourhood.size() < ModelConstants.NEIGHBOURHOOD_SIZE) 
 		{
-			for(int j = 0; j < order.getCutActivities().size(); j++) 
+			for(int i = 0; i < order.size(); i++) 
 			{
+				int j = i + ModelConstants.RANDOM.nextInt(order.size() - i);
+
 				if(i < j) 
 				{
 					Order neighbour = order.clone();
-					
+
 					//Sellect two activities to change
-					CutActivity activityOne = neighbour.getCutActivity(i);
-					CutActivity activityTwo = neighbour.getCutActivity(j);
+					CutActivity activityOne = neighbour.get(i);
+					CutActivity activityTwo = neighbour.get(j);
+
 					//Remove them
-					neighbour.removeCutActivity(activityOne);
-					neighbour.removeCutActivity(activityTwo);
-					
+					neighbour.remove(activityOne);
+					neighbour.remove(activityTwo);
+
 					//Fill a activityCutLengths list with their lengths
 					ArrayList<Float> activityCutLengths = new ArrayList<Float>();
-					activityCutLengths.addAll(activityOne.getCutLengths());
-					activityCutLengths.addAll(activityTwo.getCutLengths());
-					
+					activityCutLengths.addAll(activityOne.getLengths());
+					activityCutLengths.addAll(activityTwo.getLengths());
+
 					//Create and add new CutActivities from activityCutLengths
 					neighbour.addAll(materialCuttingProblem.generateRandomValidCutActivities(activityCutLengths));
-					
-					Neighbourhood.add(neighbour);
-				}				
-			}			
+
+					//Add neighbour to neighbourhood
+					if(neighbour.isComplete()) 
+					{
+						Neighbourhood.add(neighbour);
+					}
+					else 
+					{
+						throw new OrderNotCompleteException("Tried to add order: " + neighbour.toString() + " which is not complete.");
+					}
+
+					//If complete neighbourhood return
+					if(Neighbourhood.size() == ModelConstants.NEIGHBOURHOOD_SIZE) 
+					{
+						return Neighbourhood;
+					}
+				}
+			}
 		}
-		
+
 		return Neighbourhood;			
 	}
-	
+
 	/**
 	 * Find the best Neighbour in the given Neighbourhood
 	 * @param Neighbourhood
-	 * @return
+	 * @return bestNeighbour
 	 */
 	private Order bestNeighbourStepFunction(ArrayList<Order> Neighbourhood) 
 	{
 		Order bestNeighbour = null;
 		double bestNeighbourCost = Double.MAX_VALUE;
-		
+
 		for(Order neighbour : Neighbourhood) 
 		{
 			double neighbourCost = materialCuttingProblem.calculateCostOfOrder(neighbour);
-			
+
 			if(neighbourCost < bestNeighbourCost) 
 			{
 				bestNeighbour = neighbour;
 				bestNeighbourCost = neighbourCost;
 			}
 		}
-		
+
 		return bestNeighbour;	
-	}
-	
+	}	
 }

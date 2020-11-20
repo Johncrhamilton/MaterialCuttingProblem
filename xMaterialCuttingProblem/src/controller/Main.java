@@ -2,9 +2,10 @@ package controller;
 
 import java.util.HashMap;
 
-import model.MaterialCuttingProblem;
+import model.MCutProblem;
 import model.SEARCHMETHOD;
 import model.SearchAlgorithm;
+import model.search.algorithms.BaseEvolutionAlgorithm;
 import model.search.algorithms.LocalSearch;
 import model.search.algorithms.RandomSearch;
 import model.Order;
@@ -20,10 +21,10 @@ public class Main {
 		//int[] orderQuantities = {13, 15, 7, 5, 9, 9, 3, 15, 18, 17, 4, 17, 20, 9, 4, 19, 4, 12, 15, 3, 20, 14, 15, 6, 4, 7, 5, 19, 19, 6, 3, 7, 20, 5, 10, 17};
 
 		//Material Cutting Problem Example
-		float[] stockLengths = { 100, 80, 50 };
-		float[] stockCosts = { 250, 175, 100 };
-		float[] orderLengths = {20, 30, 25};
-		int[] orderQuantities = {5, 5, 7};
+		//float[] stockLengths = { 100, 80, 50 };
+		//float[] stockCosts = { 250, 175, 100 };
+		//float[] orderLengths = {20, 30, 25};
+		//int[] orderQuantities = {5, 5, 7};
 
 		//Material Cutting Problem One
 		//float[] stockLengths = { 10, 13, 15 };
@@ -32,18 +33,19 @@ public class Main {
 		//int[] orderQuantities = {5, 2, 1, 2, 4, 2, 1, 3};
 
 		//Material Cutting Problem Two
-		//float[] stockLengths = { 4300, 4250, 4150, 3950, 3800, 3700, 3550, 3500 };
-		//float[] stockCosts = { 86, 85, 83, 79, 68, 66, 64, 63 };
-		//float[] orderLengths = {2350, 2250, 2200, 2100, 2050, 2000, 1950, 1900, 1850, 1700, 1650, 1350, 1300, 1250, 1200, 1150, 1100, 1050};
-		//int[] orderQuantities = {2, 4, 4, 15, 6, 11, 6, 15, 13, 5, 2, 9, 3, 6, 10, 4, 8, 3};
+		float[] stockLengths = { 4300, 4250, 4150, 3950, 3800, 3700, 3550, 3500 };
+		float[] stockCosts = { 86, 85, 83, 79, 68, 66, 64, 63 };
+		float[] orderLengths = {2350, 2250, 2200, 2100, 2050, 2000, 1950, 1900, 1850, 1700, 1650, 1350, 1300, 1250, 1200, 1150, 1100, 1050};
+		int[] orderQuantities = {2, 4, 4, 15, 6, 11, 6, 15, 13, 5, 2, 9, 3, 6, 10, 4, 8, 3};
 
-		MaterialCuttingProblem materialCuttingProblemOne = createMaterialCuttingProblem(stockLengths, stockCosts, orderLengths, orderQuantities);
-
-		evaluateMaterialCuttingProblem(materialCuttingProblemOne, SEARCHMETHOD.RANDOM_SEARCH);
-		evaluateMaterialCuttingProblem(materialCuttingProblemOne, SEARCHMETHOD.LOCAL_SEARCH);
+		MCutProblem materialCuttingProblem = createMaterialCuttingProblem(stockLengths, stockCosts, orderLengths, orderQuantities);
+		
+		evaluateMaterialCuttingProblem(materialCuttingProblem, SEARCHMETHOD.RANDOM_SEARCH);		
+		evaluateMaterialCuttingProblem(materialCuttingProblem, SEARCHMETHOD.LOCAL_SEARCH);
+		evaluateMaterialCuttingProblem(materialCuttingProblem, SEARCHMETHOD.BASE_EVOLUTION_SEARCH);
 	}
 
-	private static void evaluateMaterialCuttingProblem(MaterialCuttingProblem materialCuttingProblem, SEARCHMETHOD searchMethod) 
+	private static void evaluateMaterialCuttingProblem(MCutProblem materialCuttingProblem, SEARCHMETHOD searchMethod) 
 	{
 		SearchAlgorithm selectedAlgorithm;			
 		System.out.println(searchMethod.toString());
@@ -57,7 +59,7 @@ public class Main {
 			selectedAlgorithm = new LocalSearch(materialCuttingProblem);
 			break;
 		case BASE_EVOLUTION_SEARCH:
-			selectedAlgorithm = null;
+			selectedAlgorithm = new BaseEvolutionAlgorithm(materialCuttingProblem);
 			break;
 		case EVOLUTION_SEARCH:
 			selectedAlgorithm = null;
@@ -67,7 +69,7 @@ public class Main {
 		}
 
 		Order bestOrder = selectedAlgorithm.bestOrder();
-		System.out.println("Best Order Found: \n" + bestOrder);
+		System.out.println("\nBest Order Found: \n" + bestOrder);
 		System.out.println("Best Order Cost: " + materialCuttingProblem.calculateCostOfOrder(bestOrder));
 
 		System.out.println("----------------------------------------------------\n");
@@ -81,7 +83,7 @@ public class Main {
 	 * @param orderQuantities
 	 * @return MaterialCuttingProblem
 	 */
-	private static MaterialCuttingProblem createMaterialCuttingProblem(float[] stockLengths, float[] stockCosts, float[] orderLengths, int[] orderQuantities) 
+	private static MCutProblem createMaterialCuttingProblem(float[] stockLengths, float[] stockCosts, float[] orderLengths, int[] orderQuantities) 
 	{		
 		HashMap<Float, Float> stockLengthsAndCosts = new HashMap<Float, Float>(3);
 		for(int i = 0; i < stockLengths.length; i++) 
@@ -95,7 +97,7 @@ public class Main {
 			orderedLengthsAndQuantities.put(orderLengths[i], orderQuantities[i]);
 		}
 
-		return new MaterialCuttingProblem(stockLengthsAndCosts, orderedLengthsAndQuantities);
+		return new MCutProblem(stockLengthsAndCosts, orderedLengthsAndQuantities);
 	}
 
 }

@@ -6,7 +6,7 @@ public class CutActivity {
 
 	private final float STOCK_LENGTH;
 
-	private ArrayList<Float> cutLengths;
+	private ArrayList<Float> lengths;
 
 	private float availableSpace;
 
@@ -21,7 +21,7 @@ public class CutActivity {
 			throw new IllegalArgumentException("Stock Length " + stockLength + " must be greater than 0");
 		}
 		
-		cutLengths = new ArrayList<Float>();		
+		lengths = new ArrayList<Float>();		
 		availableSpace = stockLength;
 	}
 	
@@ -30,31 +30,13 @@ public class CutActivity {
 	 * @param cutLength
 	 * @return boolean, was the element added
 	 */
-	public boolean addCutLength(float cutLength) 
+	public boolean add(float cutLength) 
 	{
 		if(availableSpace >= cutLength && cutLength > 0) 
 		{
-			cutLengths.add(cutLength);
+			lengths.add(cutLength);
 			
 			availableSpace -= cutLength;
-			
-			return true;
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * Remove Cut Length with index
-	 * @param index
-	 * @return boolean, was the element removed
-	 */
-	public boolean removeCutLength(int index) 
-	{
-		if(cutLengths.size() > index && index >= 0) 
-		{
-			availableSpace += cutLengths.get(index);
-			cutLengths.remove(index);
 			
 			return true;
 		}
@@ -67,12 +49,12 @@ public class CutActivity {
 	 * @param length
 	 * @return boolean, was the element removed
 	 */
-	public boolean removeCutLength(float length) 
+	public boolean remove(float length) 
 	{
-		if(cutLengths.size() > 0 && cutLengths.contains(length)) 
+		if(lengths.size() > 0 && lengths.contains(length)) 
 		{
 			availableSpace += length;
-			cutLengths.remove(length);
+			lengths.remove(length);
 			
 			return true;
 		}
@@ -80,37 +62,31 @@ public class CutActivity {
 	}
 	
 	/**
-	 * The number of a specific Cut Length in Cut Activity
-	 * @param length
-	 * @return count
+	 * Get Length at index
+	 * @param index
+	 * @return length
 	 */
-	public int cutLengthQuantity(float length) 
+	public float get(int index) 
 	{
-		int count = 0;
-		
-		if(!cutLengths.contains(length)) 
-		{
-			return count;
-		}
-		
-		for(int i = 0; i < cutLengths.size(); i++) 
-		{
-			if(cutLengths.get(i) == length) 
-			{
-				count++;
-			}
-		}
-		
-		return count;
+		return lengths.get(index);
 	}
 
 	/**
 	 * Get Cut Lengths
 	 * @return cutLengths
 	 */
-	public ArrayList<Float> getCutLengths() 
+	public ArrayList<Float> getLengths() 
 	{
-		return cutLengths;
+		return lengths;
+	}
+	
+	/**
+	 * Number of lengths
+	 * @return size
+	 */
+	public int size() 
+	{
+		return lengths.size();
 	}
 	
 	/**
@@ -138,7 +114,7 @@ public class CutActivity {
 	public String toString() 
 	{
 		String string = "[ Stock length " + STOCK_LENGTH + ": ";
-		for(Float cutLength : cutLengths) 
+		for(Float cutLength : lengths) 
 		{
 			string = string + cutLength + " ";
 		}
@@ -149,18 +125,26 @@ public class CutActivity {
 	
 	/**
 	 * @param Object obj
-	 * @return boolean, if same route true else false;
+	 * @return boolean, if same cut activity true else false
 	 */
 	public boolean equals(Object obj) 
 	{
+		//Type check
 		if(!(obj instanceof CutActivity)) 
 		{
 			return false;
 		}
 		
-		for(int i = 0; i < cutLengths.size(); i++) 
+		//Size check
+		if(lengths.size() != ((CutActivity)obj).getLengths().size()) 
 		{
-			if(cutLengths.get(i) != ((CutActivity)obj).getCutLengths().get(i))
+			return false;
+		}
+		
+		//Content check
+		for(int i = 0; i < lengths.size(); i++)
+		{
+			if(lengths.get(i) != ((CutActivity)obj).get(i))
 			{
 				return false;				
 			}

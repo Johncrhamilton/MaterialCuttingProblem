@@ -28,12 +28,12 @@ public class Order {
 	 * @param cutActivity
 	 * @return boolean, was the element added
 	 */
-	public boolean addCutActivity(CutActivity cutActivity) 
+	public boolean add(CutActivity cutActivity) 
 	{
 		//Don't add if the order has been completed
-		if(!completeOrder()) 
+		if(!isComplete()) 
 		{
-			for(Float cutLength : cutActivity.getCutLengths()) 
+			for(Float cutLength : cutActivity.getLengths()) 
 			{
 				//Make sure that adding the cutLength to the Order won't exceed the ordered amounds
 				if(currentOrderedLengthsAndQuantities.get(cutLength) >= ORDERED_LENGTHS_AND_QUANTITIES.get(cutLength)) 
@@ -43,7 +43,7 @@ public class Order {
 			}
 
 			//Update the current piece quantities
-			for(Float cutLength : cutActivity.getCutLengths()) 
+			for(Float cutLength : cutActivity.getLengths()) 
 			{
 				currentOrderedLengthsAndQuantities.put(cutLength, currentOrderedLengthsAndQuantities.get(cutLength) + 1);
 			}
@@ -54,7 +54,7 @@ public class Order {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Try add all cutActivities given 
 	 * @param cutActivities
@@ -64,7 +64,7 @@ public class Order {
 	{
 		for(CutActivity cutActivity : cutActivities) 
 		{
-			if(!addCutActivity(cutActivity)) 
+			if(!add(cutActivity)) 
 			{
 				return false;
 			}
@@ -74,33 +74,10 @@ public class Order {
 
 	/**
 	 * Remove a cut activity from the order and adjust the current piece quantities
-	 * @param index
-	 * @return boolean, was the element removed
-	 */
-	public boolean removeCutActivity(int index) 
-	{
-		//Don't remove if the order is empty or index is out of bounds
-		if(orderCutActivities.size() > 0 && orderCutActivities.size() > index && index >= 0) 
-		{
-			CutActivity cutActivity = orderCutActivities.get(index);
-			orderCutActivities.remove(index);
-			
-			//Update the current piece quantities
-			for(Float cutLength : cutActivity.getCutLengths()) 
-			{
-				currentOrderedLengthsAndQuantities.put(cutLength, currentOrderedLengthsAndQuantities.get(cutLength) - 1);
-			}
-			return true;	
-		}
-		return false;
-	}
-	
-	/**
-	 * Remove a cut activity from the order and adjust the current piece quantities
 	 * @param cutActivity
 	 * @return boolean, was the element removed
 	 */
-	public boolean removeCutActivity(CutActivity cutActivity) 
+	public boolean remove(CutActivity cutActivity) 
 	{
 		//Don't remove if the order is empty or the order doesn't have the cut activity
 		if(orderCutActivities.size() > 0 && orderCutActivities.contains(cutActivity)) 
@@ -108,7 +85,7 @@ public class Order {
 			orderCutActivities.remove(cutActivity);
 
 			//Update the current piece quantities
-			for(Float cutLength : cutActivity.getCutLengths()) 
+			for(Float cutLength : cutActivity.getLengths()) 
 			{
 				currentOrderedLengthsAndQuantities.put(cutLength, currentOrderedLengthsAndQuantities.get(cutLength) - 1);
 			}
@@ -122,7 +99,7 @@ public class Order {
 	 * @param index
 	 * @return CutActivity
 	 */
-	public CutActivity getCutActivity(int index) 
+	public CutActivity get(int index) 
 	{
 		return orderCutActivities.get(index);
 	}
@@ -137,10 +114,19 @@ public class Order {
 	}
 
 	/**
+	 * Number of Order Cut Activities
+	 * @return size
+	 */
+	public int size() 
+	{
+		return orderCutActivities.size();
+	}
+
+	/**
 	 * Is the Order complete
 	 * @return boolean
 	 */
-	public boolean completeOrder() 
+	public boolean isComplete() 
 	{		
 		return currentOrderedLengthsAndQuantities.entrySet().equals(ORDERED_LENGTHS_AND_QUANTITIES.entrySet());
 	}
@@ -162,18 +148,26 @@ public class Order {
 
 	/**
 	 * @param Object obj
-	 * @return boolean, if same route true else false;
+	 * @return boolean, if same order true else false
 	 */
 	public boolean equals(Object obj) 
 	{
+		//Type check
 		if(!(obj instanceof Order)) 
 		{
 			return false;
 		}
 
+		//Size check
+		if(orderCutActivities.size() != ((Order)obj).getCutActivities().size()) 
+		{
+			return false;
+		}
+
+		//Content check
 		for(int i = 0; i < orderCutActivities.size(); i++) 
 		{
-			if(!orderCutActivities.get(i).equals(((Order)obj).getCutActivities().get(i)))
+			if(!orderCutActivities.get(i).equals(((Order)obj).get(i)))
 			{
 				return false;				
 			}
@@ -193,7 +187,7 @@ public class Order {
 
 		for(int i = 0; i < orderCutActivities.size(); i++) 
 		{
-			copy.addCutActivity(orderCutActivities.get(i));
+			copy.add(orderCutActivities.get(i));
 		}
 
 		return copy;
