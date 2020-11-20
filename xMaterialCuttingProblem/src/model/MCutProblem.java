@@ -62,7 +62,7 @@ public class MCutProblem {
 		}
 		else 
 		{
-			throw new OrderNotCompleteException("Tried to add order: " + randomValidOrder.toString() + " which is not complete.");
+			throw new OrderException("Tried to add order which is not complete." + randomValidOrder.toString());
 		}
 	}
 

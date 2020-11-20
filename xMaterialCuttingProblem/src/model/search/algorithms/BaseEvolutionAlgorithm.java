@@ -7,7 +7,7 @@ import model.CutActivity;
 import model.MCutProblem;
 import model.ModelConstants;
 import model.Order;
-import model.OrderNotCompleteException;
+import model.OrderException;
 import model.SearchAlgorithm;
 
 public class BaseEvolutionAlgorithm  implements SearchAlgorithm {
@@ -242,7 +242,7 @@ public class BaseEvolutionAlgorithm  implements SearchAlgorithm {
 		}
 		else 
 		{
-			throw new OrderNotCompleteException("Tried to add order: " + child.toString() + " which is not complete.");
+			throw new OrderException("Tried to add order which is not complete." + child.toString());
 		}
 	}
 
@@ -277,7 +277,7 @@ public class BaseEvolutionAlgorithm  implements SearchAlgorithm {
 		}
 		else 
 		{
-			throw new OrderNotCompleteException("Tried to add order: " + order.toString() + " which is not complete.");
+			throw new OrderException("Tried to add order which is not complete." + order.toString());
 		}
 	}
 

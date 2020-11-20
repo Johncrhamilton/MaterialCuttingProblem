@@ -6,7 +6,7 @@ import model.CutActivity;
 import model.MCutProblem;
 import model.ModelConstants;
 import model.Order;
-import model.OrderNotCompleteException;
+import model.OrderException;
 import model.SearchAlgorithm;
 
 public class LocalSearch implements SearchAlgorithm {
@@ -87,8 +87,9 @@ public class LocalSearch implements SearchAlgorithm {
 		{
 			for(int i = 0; i < order.size(); i++) 
 			{
-				int j = i + ModelConstants.RANDOM.nextInt(order.size() - i);
-
+				//int j = i + ModelConstants.RANDOM.nextInt(order.size() - i);
+				int j = i + 1;
+				
 				if(i < j) 
 				{
 					Order neighbour = order.clone();
@@ -116,7 +117,7 @@ public class LocalSearch implements SearchAlgorithm {
 					}
 					else 
 					{
-						throw new OrderNotCompleteException("Tried to add order: " + neighbour.toString() + " which is not complete.");
+						throw new OrderException("Tried to add order which is not complete." + neighbour.toString());
 					}
 
 					//If complete neighbourhood return
