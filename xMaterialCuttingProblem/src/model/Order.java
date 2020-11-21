@@ -33,19 +33,19 @@ public class Order {
 		//Don't add if the order has been completed
 		if(!isComplete()) 
 		{
-			for(Float cutLength : cutActivity.getLengths()) 
+			//Make sure that adding the cutLength to the Order won't exceed the ordered amounds
+			for(int i = 0; i < cutActivity.size(); i++) 
 			{
-				//Make sure that adding the cutLength to the Order won't exceed the ordered amounds
-				if(currentOrderedLengthsAndQuantities.get(cutLength) >= ORDERED_LENGTHS_AND_QUANTITIES.get(cutLength)) 
+				if(currentOrderedLengthsAndQuantities.get(cutActivity.get(i)) >= ORDERED_LENGTHS_AND_QUANTITIES.get(cutActivity.get(i))) 
 				{
 					return false; 
 				}
 			}
 
 			//Update the current piece quantities
-			for(Float cutLength : cutActivity.getLengths()) 
+			for(int i = 0; i < cutActivity.size(); i++) 
 			{
-				currentOrderedLengthsAndQuantities.put(cutLength, currentOrderedLengthsAndQuantities.get(cutLength) + 1);
+				currentOrderedLengthsAndQuantities.put(cutActivity.get(i), currentOrderedLengthsAndQuantities.get(cutActivity.get(i)) + 1);
 			}
 
 			orderCutActivities.add(cutActivity);
@@ -85,9 +85,9 @@ public class Order {
 			orderCutActivities.remove(cutActivity);
 
 			//Update the current piece quantities
-			for(Float cutLength : cutActivity.getLengths()) 
+			for(int i = 0; i < cutActivity.size(); i++) 
 			{
-				currentOrderedLengthsAndQuantities.put(cutLength, currentOrderedLengthsAndQuantities.get(cutLength) - 1);
+				currentOrderedLengthsAndQuantities.put(cutActivity.get(i), currentOrderedLengthsAndQuantities.get(cutActivity.get(i)) - 1);
 			}
 			return true;
 		}
@@ -101,16 +101,7 @@ public class Order {
 	 */
 	public CutActivity get(int index) 
 	{
-		return orderCutActivities.get(index);
-	}
-
-	/**
-	 * Get Cut Activities
-	 * @return CutActivities
-	 */
-	public ArrayList<CutActivity> getCutActivities() 
-	{
-		return orderCutActivities;
+		return orderCutActivities.get(index).clone();
 	}
 
 	/**
@@ -159,7 +150,7 @@ public class Order {
 		}
 
 		//Size check
-		if(orderCutActivities.size() != ((Order)obj).getCutActivities().size()) 
+		if(size() != ((Order)obj).size()) 
 		{
 			return false;
 		}

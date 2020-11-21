@@ -7,12 +7,12 @@ import java.util.Iterator;
 
 public class MCutProblem {
 
+	public final ArrayList<Float> allOrderLengths;
 	//Unique lengths as floats and costs as floats
 	private final HashMap<Float, Float> STOCK_LENGTHS_AND_COSTS;
 	//Unique lengths as floats and quantities as integers
 	private final HashMap<Float, Integer> ORDERED_LENGTHS_AND_QUANTITIES;
 
-	private final ArrayList<Float> allOrderLengths;
 	private final float shortestOrderedLength;
 
 	public MCutProblem(HashMap<Float, Float> stockLengthsAndCosts, HashMap<Float, Integer> orderedLengthsAndQuantities) 
@@ -164,9 +164,9 @@ public class MCutProblem {
 		//Loop through order's cut activities and sum thier costs using stock lengths and stock costs
 		double orderCost = 0;
 
-		for(CutActivity cutActivity : order.getCutActivities()) 
+		for(int i = 0; i < order.size(); i++) 
 		{
-			orderCost += STOCK_LENGTHS_AND_COSTS.get(cutActivity.getStockLength());
+			orderCost += STOCK_LENGTHS_AND_COSTS.get(order.get(i).getStockLength());
 		}
 
 		return orderCost;
@@ -188,14 +188,5 @@ public class MCutProblem {
 	public HashMap<Float, Float> getStockLengthsAndCosts() 
 	{
 		return STOCK_LENGTHS_AND_COSTS;
-	}
-	
-	/**
-	 * Get All Order Lengths
-	 * @return AllOrderLengths
-	 */
-	public ArrayList<Float> getAllOrderLengths() 
-	{
-		return (ArrayList<Float>) allOrderLengths.clone();
 	}
 }

@@ -70,14 +70,14 @@ public class CutActivity {
 	{
 		return lengths.get(index);
 	}
-
+	
 	/**
-	 * Get Cut Lengths
-	 * @return cutLengths
+	 * Get a copy of the lengths in CutActivity
+	 * @return ArrayList<Float>
 	 */
 	public ArrayList<Float> getLengths() 
 	{
-		return lengths;
+		return (ArrayList<Float>) lengths.clone();
 	}
 	
 	/**
@@ -136,7 +136,7 @@ public class CutActivity {
 		}
 		
 		//Size check
-		if(lengths.size() != ((CutActivity)obj).getLengths().size()) 
+		if(size() != ((CutActivity)obj).size()) 
 		{
 			return false;
 		}

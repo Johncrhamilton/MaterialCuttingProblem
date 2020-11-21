@@ -86,32 +86,38 @@ public class LocalSearch implements SearchAlgorithm {
 		for(int i = 0; i < order.size() - 1; i++) 
 		{
 			int j = i + 1;
-			Order neighbour = order.clone();
+			//for(int j = 1; j < order.size(); j++) 
+			//{
+				if(j > i) 
+				{
+					Order neighbour = order.clone();
 
-			//Sellect two activities to change
-			CutActivity activityOne = neighbour.get(i).clone();
-			CutActivity activityTwo = neighbour.get(j).clone();
+					//Sellect two activities to change
+					CutActivity activityOne = neighbour.get(i);
+					CutActivity activityTwo = neighbour.get(j);
 
-			//Remove them
-			neighbour.remove(activityOne);
-			neighbour.remove(activityTwo);
+					//Remove them
+					neighbour.remove(activityOne);
+					neighbour.remove(activityTwo);
 
-			//Fill a activityCutLengths list with their lengths
-			ArrayList<Float> activityCutLengths = new ArrayList<Float>();
-			activityCutLengths.addAll(activityOne.getLengths());
-			activityCutLengths.addAll(activityTwo.getLengths());
+					//Fill a activityCutLengths list with their lengths
+					ArrayList<Float> activityCutLengths = new ArrayList<Float>();
+					activityCutLengths.addAll(activityOne.getLengths());
+					activityCutLengths.addAll(activityTwo.getLengths());
 
-			//Create and add new CutActivities from activityCutLengths
-			neighbour.addAll(materialCuttingProblem.generateRandomValidCutActivities(activityCutLengths));
+					//Create and add new CutActivities from activityCutLengths
+					neighbour.addAll(materialCuttingProblem.generateRandomValidCutActivities(activityCutLengths));
 
-			//Add neighbour to neighbourhood
-			if(neighbour.isComplete())
-			{
-				Neighbourhood.add(neighbour);
-			}
-			else
-			{
-				throw new OrderException("Tried to add order which is not complete." + neighbour.toString());
+					//Add neighbour to neighbourhood
+					if(neighbour.isComplete())
+					{
+						Neighbourhood.add(neighbour);
+					}
+					else
+					{
+						throw new OrderException("Tried to add order which is not complete." + neighbour.toString());
+					}
+				//}
 			}
 		}
 

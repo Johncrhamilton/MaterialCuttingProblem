@@ -188,7 +188,7 @@ public class BaseEvolutionAlgorithm  implements SearchAlgorithm {
 		Order child = new Order(materialCuttingProblem.getOrderedLengthsAndQuantities());
 
 		//Keep track of Ordered lengths that still need to be added
-		ArrayList<Float> orderedLengthsNeeded = materialCuttingProblem.getAllOrderLengths();
+		ArrayList<Float> orderedLengthsNeeded = (ArrayList<Float>) materialCuttingProblem.allOrderLengths.clone();
 		
 		//In the event that the FirstParent isn't equal in size to the second parent
 	    //Extract a size proportional to the first parent
@@ -198,12 +198,12 @@ public class BaseEvolutionAlgorithm  implements SearchAlgorithm {
 		//Copy in first parent's cut activities
 		for(int i = 0; i < copyLengthFirstParent; i++) 
 		{
-			CutActivity cutActivity = firstParent.get(firstParentIndex).clone();
+			CutActivity cutActivity = firstParent.get(firstParentIndex);
 			child.add(cutActivity);
 
-			for(float length : cutActivity.getLengths()) 
+			for(int j = 0; j < cutActivity.size(); j++) 
 			{
-				orderedLengthsNeeded.remove(length);
+				orderedLengthsNeeded.remove(cutActivity.get(j));
 			}
 
 			firstParentIndex = (firstParentIndex + 1) % firstParent.size();
@@ -257,9 +257,9 @@ public class BaseEvolutionAlgorithm  implements SearchAlgorithm {
 		if(ModelConstants.RANDOM.nextDouble() < ModelConstants.MUTATION_PROBABILITY) 
 		{
 			//Randomly select two cut activites from order and remove the two cut activites from order
-			CutActivity randomActivityOne = order.get(ModelConstants.RANDOM.nextInt(order.size())).clone();			
+			CutActivity randomActivityOne = order.get(ModelConstants.RANDOM.nextInt(order.size()));			
 			order.remove(randomActivityOne);			
-			CutActivity randomActivityTwo = order.get(ModelConstants.RANDOM.nextInt(order.size())).clone();
+			CutActivity randomActivityTwo = order.get(ModelConstants.RANDOM.nextInt(order.size()));
 			order.remove(randomActivityTwo);			
 
 			//Create new cut activites from their cut lengths
