@@ -10,7 +10,7 @@ import model.Order;
 import model.OrderException;
 import model.SearchAlgorithm;
 
-public class BaseEvolutionAlgorithm  implements SearchAlgorithm {
+public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 
 	private MCutProblem materialCuttingProblem;
 
@@ -18,7 +18,7 @@ public class BaseEvolutionAlgorithm  implements SearchAlgorithm {
 	private Order fittestIndividual;
 	private double fittestIndividualCost;
 
-	public BaseEvolutionAlgorithm(MCutProblem materialCuttingProblem)
+	public BaselineEvolutionAlgorithm(MCutProblem materialCuttingProblem)
 	{
 		this.materialCuttingProblem = materialCuttingProblem;
 	}

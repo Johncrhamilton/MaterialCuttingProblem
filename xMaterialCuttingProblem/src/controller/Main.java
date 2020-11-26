@@ -5,7 +5,8 @@ import java.util.HashMap;
 import model.MCutProblem;
 import model.SEARCHMETHOD;
 import model.SearchAlgorithm;
-import model.search.algorithms.BaseEvolutionAlgorithm;
+import model.search.algorithms.BaselineEvolutionAlgorithm;
+import model.search.algorithms.EvolutionAlgorithm;
 import model.search.algorithms.LocalSearch;
 import model.search.algorithms.RandomSearch;
 import model.Order;
@@ -42,7 +43,7 @@ public class Main {
 		
 		evaluateMaterialCuttingProblem(materialCuttingProblem, SEARCHMETHOD.RANDOM_SEARCH);		
 		evaluateMaterialCuttingProblem(materialCuttingProblem, SEARCHMETHOD.LOCAL_SEARCH);
-		evaluateMaterialCuttingProblem(materialCuttingProblem, SEARCHMETHOD.BASE_EVOLUTION_SEARCH);
+		evaluateMaterialCuttingProblem(materialCuttingProblem, SEARCHMETHOD.BASELINE_EVOLUTION_SEARCH);
 	}
 
 	private static void evaluateMaterialCuttingProblem(MCutProblem materialCuttingProblem, SEARCHMETHOD searchMethod) 
@@ -58,11 +59,11 @@ public class Main {
 		case LOCAL_SEARCH:
 			selectedAlgorithm = new LocalSearch(materialCuttingProblem);
 			break;
-		case BASE_EVOLUTION_SEARCH:
-			selectedAlgorithm = new BaseEvolutionAlgorithm(materialCuttingProblem);
+		case BASELINE_EVOLUTION_SEARCH:
+			selectedAlgorithm = new BaselineEvolutionAlgorithm(materialCuttingProblem);
 			break;
 		case EVOLUTION_SEARCH:
-			selectedAlgorithm = null;
+			selectedAlgorithm = new EvolutionAlgorithm(materialCuttingProblem);;
 			break;
 		default:
 			throw new UnsupportedOperationException("Search method " + searchMethod.toString() + " is not supported.");	
