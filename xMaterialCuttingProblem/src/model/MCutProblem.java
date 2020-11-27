@@ -14,8 +14,10 @@ public class MCutProblem {
 	private final HashMap<Float, Integer> ORDERED_LENGTHS_AND_QUANTITIES;
 
 	private final float shortestOrderedLength;
+	
+	private final double maximumOrderCost;
 
-	public MCutProblem(HashMap<Float, Float> stockLengthsAndCosts, HashMap<Float, Integer> orderedLengthsAndQuantities) 
+	public MCutProblem(HashMap<Float, Float> stockLengthsAndCosts, HashMap<Float, Integer> orderedLengthsAndQuantities, double maximumOrderCost) 
 	{
 		//Stock lengths and costs constrained by hashmap
 		STOCK_LENGTHS_AND_COSTS = stockLengthsAndCosts;
@@ -44,6 +46,8 @@ public class MCutProblem {
 		}
 		
 		shortestOrderedLength = tempShortestOrderedLength;
+		
+		this.maximumOrderCost = maximumOrderCost;
 	}
 
 	/**
@@ -170,6 +174,18 @@ public class MCutProblem {
 		}
 
 		return orderCost;
+	}
+	
+	/**
+	 * Calculate Fitness Of Order as:
+	 * The theoretical maximumOrderCost minus cost of this order.
+	 * The lower the cost the higher the fitness;
+	 * @param order
+	 * @return order fitness
+	 */
+	public double calculateFitnessOfOrder(Order order) 
+	{
+		return maximumOrderCost - calculateCostOfOrder(order);
 	}
 
 	/**

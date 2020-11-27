@@ -14,7 +14,7 @@ public class LocalSearch implements SearchAlgorithm {
 	private MCutProblem materialCuttingProblem;
 
 	private Order bestOrder;
-	private double bestOrderCost;
+	private double bestOrderFitness;
 
 	public LocalSearch(MCutProblem materialCuttingProblem)
 	{
@@ -24,7 +24,7 @@ public class LocalSearch implements SearchAlgorithm {
 	public Order bestOrder() 
 	{
 		bestOrder = materialCuttingProblem.generateRandomValidOrder();
-		bestOrderCost = materialCuttingProblem.calculateCostOfOrder(bestOrder);
+		bestOrderFitness = materialCuttingProblem.calculateFitnessOfOrder(bestOrder);
 
 		if(ModelConstants.LIMITED_ITERATIONS)
 		{
@@ -64,12 +64,12 @@ public class LocalSearch implements SearchAlgorithm {
 
 		//Find best neighbour in the neighbourhood
 		Order bestNeighbour = bestNeighbourStepFunction(neighbourhood);
-		double bestNeighbourCost = materialCuttingProblem.calculateCostOfOrder(bestNeighbour);
+		double bestNeighbourFitness = materialCuttingProblem.calculateFitnessOfOrder(bestNeighbour);
 
-		if(bestNeighbourCost < bestOrderCost) 
+		if(bestNeighbourFitness > bestOrderFitness) 
 		{
 			bestOrder = bestNeighbour;
-			bestOrderCost = bestNeighbourCost;
+			bestOrderFitness = bestNeighbourFitness;
 		}
 	}
 
@@ -80,7 +80,7 @@ public class LocalSearch implements SearchAlgorithm {
 	 */
 	private ArrayList<Order> generateNeighbourhood(Order order)
 	{
-		ArrayList<Order> Neighbourhood = new ArrayList<Order>();
+		ArrayList<Order> Neighbourhood = new ArrayList<Order>(order.size());
 
 		//Create neighbours to the given order
 		for(int i = 0; i < order.size() - 1; i++) 
@@ -132,16 +132,16 @@ public class LocalSearch implements SearchAlgorithm {
 	private Order bestNeighbourStepFunction(ArrayList<Order> Neighbourhood) 
 	{
 		Order bestNeighbour = null;
-		double bestNeighbourCost = Double.MAX_VALUE;
+		double bestNeighbourFitness = -Double.MAX_VALUE;
 
 		for(Order neighbour : Neighbourhood) 
 		{
-			double neighbourCost = materialCuttingProblem.calculateCostOfOrder(neighbour);
+			double neighbourFitness = materialCuttingProblem.calculateFitnessOfOrder(neighbour);
 
-			if(neighbourCost < bestNeighbourCost) 
+			if(neighbourFitness > bestNeighbourFitness) 
 			{
 				bestNeighbour = neighbour;
-				bestNeighbourCost = neighbourCost;
+				bestNeighbourFitness = neighbourFitness;
 			}
 		}
 

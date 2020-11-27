@@ -10,7 +10,7 @@ public class RandomSearch implements SearchAlgorithm {
 	private MCutProblem materialCuttingProblem;
 	
 	private Order bestOrder;
-	private double bestOrderCost;
+	private double bestOrderFitness;
 	
 	public RandomSearch(MCutProblem materialCuttingProblem) 
 	{
@@ -20,7 +20,7 @@ public class RandomSearch implements SearchAlgorithm {
 	public Order bestOrder() 
 	{
 		bestOrder = materialCuttingProblem.generateRandomValidOrder();
-		bestOrderCost = materialCuttingProblem.calculateCostOfOrder(bestOrder);
+		bestOrderFitness = materialCuttingProblem.calculateFitnessOfOrder(bestOrder);
 		
 		if(ModelConstants.LIMITED_ITERATIONS) 
 		{
@@ -56,12 +56,12 @@ public class RandomSearch implements SearchAlgorithm {
 	private void oneIteration() 
 	{
 		Order randomOrder = materialCuttingProblem.generateRandomValidOrder();
-		double randomOrderCost = materialCuttingProblem.calculateCostOfOrder(randomOrder);
+		double randomOrderFitness = materialCuttingProblem.calculateFitnessOfOrder(randomOrder);
 		
-		if(randomOrderCost < bestOrderCost) 
+		if(randomOrderFitness > bestOrderFitness) 
 		{
 			bestOrder = randomOrder;
-			bestOrderCost = randomOrderCost;
+			bestOrderFitness = randomOrderFitness;
 		}
 	}
 	

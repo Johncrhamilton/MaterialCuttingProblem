@@ -16,7 +16,7 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 
 	private ArrayList<Order> currentPopulation;
 	private Order fittestIndividual;
-	private double fittestIndividualCost;
+	private double fittestIndividualFitness;
 
 	public BaselineEvolutionAlgorithm(MCutProblem materialCuttingProblem)
 	{
@@ -27,7 +27,7 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 	{
 		currentPopulation = initialisation();
 
-		System.out.println("Starting fittest individual Cost: " + fittestIndividualCost);
+		System.out.println("Starting individual fitness: " + fittestIndividualFitness);
 
 		if(ModelConstants.LIMITED_ITERATIONS) 
 		{
@@ -66,17 +66,17 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 		ArrayList<Order> initialPopulation = new ArrayList<Order>(ModelConstants.POPULATION_SIZE);
 
 		fittestIndividual = null;
-		fittestIndividualCost = Double.MAX_VALUE;
+		fittestIndividualFitness = -Double.MAX_VALUE;
 
 		for(int i = 0; i < ModelConstants.POPULATION_SIZE; i++) 
 		{
 			Order individual = materialCuttingProblem.generateRandomValidOrder();
-			double individualCost = materialCuttingProblem.calculateCostOfOrder(individual);
+			double individualFitness = materialCuttingProblem.calculateFitnessOfOrder(individual);
 
-			if(individualCost < fittestIndividualCost) 
+			if(individualFitness > fittestIndividualFitness) 
 			{
 				fittestIndividual = individual;
-				fittestIndividualCost = individualCost;
+				fittestIndividualFitness = individualFitness;
 			}
 
 			initialPopulation.add(individual);
@@ -111,7 +111,7 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 	 */
 	private ArrayList<Order> produceOffspring(ArrayList<Order> population) 
 	{
-		ArrayList<Order> offspring = new ArrayList<Order>();		
+		ArrayList<Order> offspring = new ArrayList<Order>(ModelConstants.OFFSPRING_POPULATION_SIZE);		
 
 		while(offspring.size() < ModelConstants.OFFSPRING_POPULATION_SIZE) 
 		{
@@ -138,17 +138,17 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 	private Order tournamentParentSelection(ArrayList<Order> population) 
 	{
 		Order fittestParent = null;
-		double fittestParentCost = Double.MAX_VALUE;
+		double fittestParentFitness = -Double.MAX_VALUE;
 
 		for(int i = 0; i < ModelConstants.TOURNAMENT_SELECTIVE_SAMPLE; i++) 
 		{
 			Order randomParent = population.get(ModelConstants.RANDOM.nextInt(population.size()));
-			double randomParentCost = materialCuttingProblem.calculateCostOfOrder(randomParent);
+			double randomParentFitness = materialCuttingProblem.calculateFitnessOfOrder(randomParent);
 
-			if(randomParentCost < fittestParentCost) 
+			if(randomParentFitness > fittestParentFitness) 
 			{
 				fittestParent = randomParent;
-				fittestParentCost = randomParentCost;
+				fittestParentFitness = randomParentFitness;
 			}
 		}
 
@@ -290,12 +290,12 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 		for(int i = 0; i < population.size(); i++) 
 		{
 			Order individual = population.get(i);
-			double individualCost = materialCuttingProblem.calculateCostOfOrder(individual);
+			double individualFitness = materialCuttingProblem.calculateFitnessOfOrder(individual);
 
-			if(individualCost < fittestIndividualCost) 
+			if(individualFitness > fittestIndividualFitness) 
 			{
 				fittestIndividual = individual;
-				fittestIndividualCost = individualCost;
+				fittestIndividualFitness = individualFitness;
 			}			
 		}
 	}
@@ -306,7 +306,7 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 	 */
 	private ArrayList<Order> generationalSurvivorSelection(ArrayList<Order> population) 
 	{
-		ArrayList<Order> survivors = new ArrayList<Order>();
+		ArrayList<Order> survivors = new ArrayList<Order>(ModelConstants.POPULATION_SIZE);
 
 		while(survivors.size() < ModelConstants.POPULATION_SIZE) 
 		{
