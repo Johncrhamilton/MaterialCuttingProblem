@@ -12,42 +12,34 @@ public class MCutProblem {
 	private final HashMap<Float, Float> STOCK_LENGTHS_AND_COSTS;
 	//Unique lengths as floats and quantities as integers
 	private final HashMap<Float, Integer> ORDERED_LENGTHS_AND_QUANTITIES;
-
-	private final float shortestOrderedLength;
 	
-	private final double maximumOrderCost;
+	private float shortestOrderedLength = Float.MAX_VALUE;
 
-	public MCutProblem(HashMap<Float, Float> stockLengthsAndCosts, HashMap<Float, Integer> orderedLengthsAndQuantities, double maximumOrderCost) 
+	public MCutProblem(HashMap<Float, Float> stockLengthsAndCosts, HashMap<Float, Integer> orderedLengthsAndQuantities) 
 	{
 		//Stock lengths and costs constrained by hashmap
 		STOCK_LENGTHS_AND_COSTS = stockLengthsAndCosts;
 		//Ordered lengths' and quantities constrained by hashmap
 		ORDERED_LENGTHS_AND_QUANTITIES = orderedLengthsAndQuantities;
 		
-		float tempShortestOrderedLength = Float.MAX_VALUE;
-		
 		//Create new Arraylist that is the total ORDERED_PIECE_LENGTHS * ORDERED_PIECE_QUANTITIES
 		allOrderLengths = new ArrayList<Float>();
 
 		//For each length ordered
-		for(Float length : orderedLengthsAndQuantities.keySet()) 
+		for(Float orderedLength : orderedLengthsAndQuantities.keySet()) 
 		{
 			//Find the shortest ordered length
-			if(length < tempShortestOrderedLength) 
+			if(orderedLength < shortestOrderedLength) 
 			{
-				tempShortestOrderedLength = length;
+				shortestOrderedLength = orderedLength;
 			}
 
 			//Add the required quantities
-			for(int j = 0; j < orderedLengthsAndQuantities.get(length); j++) 
+			for(int j = 0; j < orderedLengthsAndQuantities.get(orderedLength); j++) 
 			{
-				allOrderLengths.add(length);
+				allOrderLengths.add(orderedLength);
 			}
 		}
-		
-		shortestOrderedLength = tempShortestOrderedLength;
-		
-		this.maximumOrderCost = maximumOrderCost;
 	}
 
 	/**
@@ -159,11 +151,11 @@ public class MCutProblem {
 		return cutActivity;
 	}
 	/**
-	 * Calculate the cost for a given agent
+	 * Calculate the fitness (cost) for a given agent
 	 * @param order
 	 * @return orderCost
 	 */
-	public double calculateCostOfOrder(Order order) 
+	public double calculateFitnessOfOrder(Order order) 
 	{
 		//Loop through order's cut activities and sum thier costs using stock lengths and stock costs
 		double orderCost = 0;
@@ -174,18 +166,6 @@ public class MCutProblem {
 		}
 
 		return orderCost;
-	}
-	
-	/**
-	 * Calculate Fitness Of Order as:
-	 * The theoretical maximumOrderCost minus cost of this order.
-	 * The lower the cost the higher the fitness;
-	 * @param order
-	 * @return order fitness
-	 */
-	public double calculateFitnessOfOrder(Order order) 
-	{
-		return maximumOrderCost - calculateCostOfOrder(order);
 	}
 
 	/**

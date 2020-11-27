@@ -8,10 +8,10 @@ import model.SearchAlgorithm;
 public class RandomSearch implements SearchAlgorithm {
 
 	private MCutProblem materialCuttingProblem;
-	
+
 	private Order bestOrder;
 	private double bestOrderFitness;
-	
+
 	public RandomSearch(MCutProblem materialCuttingProblem) 
 	{
 		this.materialCuttingProblem = materialCuttingProblem;
@@ -21,7 +21,7 @@ public class RandomSearch implements SearchAlgorithm {
 	{
 		bestOrder = materialCuttingProblem.generateRandomValidOrder();
 		bestOrderFitness = materialCuttingProblem.calculateFitnessOfOrder(bestOrder);
-		
+
 		if(ModelConstants.LIMITED_ITERATIONS) 
 		{
 			int currentIteration = 0;
@@ -39,17 +39,17 @@ public class RandomSearch implements SearchAlgorithm {
 
 			//Time Limit in milliseconds
 			long timeLimit = currentTime + ModelConstants.TIME_LIMIT;
-			
+
 			while(currentTime < timeLimit) 
 			{
 				oneIteration();
 				currentTime = java.lang.System.currentTimeMillis();
 			}
 		}
-		
+
 		return bestOrder;
 	}
-	
+
 	/**
 	 * One iteration of random search
 	 */
@@ -57,12 +57,12 @@ public class RandomSearch implements SearchAlgorithm {
 	{
 		Order randomOrder = materialCuttingProblem.generateRandomValidOrder();
 		double randomOrderFitness = materialCuttingProblem.calculateFitnessOfOrder(randomOrder);
-		
-		if(randomOrderFitness > bestOrderFitness) 
+
+		if(randomOrderFitness < bestOrderFitness) 
 		{
 			bestOrder = randomOrder;
 			bestOrderFitness = randomOrderFitness;
 		}
 	}
-	
+
 }

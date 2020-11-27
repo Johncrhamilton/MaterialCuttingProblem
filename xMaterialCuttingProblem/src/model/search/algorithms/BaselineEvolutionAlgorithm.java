@@ -66,14 +66,14 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 		ArrayList<Order> initialPopulation = new ArrayList<Order>(ModelConstants.POPULATION_SIZE);
 
 		fittestIndividual = null;
-		fittestIndividualFitness = -Double.MAX_VALUE;
+		fittestIndividualFitness = Double.MAX_VALUE;
 
 		for(int i = 0; i < ModelConstants.POPULATION_SIZE; i++) 
 		{
 			Order individual = materialCuttingProblem.generateRandomValidOrder();
 			double individualFitness = materialCuttingProblem.calculateFitnessOfOrder(individual);
 
-			if(individualFitness > fittestIndividualFitness) 
+			if(individualFitness < fittestIndividualFitness) 
 			{
 				fittestIndividual = individual;
 				fittestIndividualFitness = individualFitness;
@@ -111,7 +111,7 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 	 */
 	private ArrayList<Order> produceOffspring(ArrayList<Order> population) 
 	{
-		ArrayList<Order> offspring = new ArrayList<Order>(ModelConstants.OFFSPRING_POPULATION_SIZE);		
+		ArrayList<Order> offspring = new ArrayList<Order>(ModelConstants.OFFSPRING_POPULATION_SIZE);
 
 		while(offspring.size() < ModelConstants.OFFSPRING_POPULATION_SIZE) 
 		{
@@ -131,21 +131,21 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 	}
 
 	/**
-	 * Look a TOURNAMENT_SELECTIVE_SAMPLE number of random parents (Orders) and pick the best one
+	 * Tournament Selection: Look at a random TOURNAMENT_SELECTIVE_SAMPLE number of random parents (Orders) and pick the best one
 	 * @param population
 	 * @return fittestParent
 	 */
 	private Order tournamentParentSelection(ArrayList<Order> population) 
 	{
 		Order fittestParent = null;
-		double fittestParentFitness = -Double.MAX_VALUE;
+		double fittestParentFitness = Double.MAX_VALUE;
 
 		for(int i = 0; i < ModelConstants.TOURNAMENT_SELECTIVE_SAMPLE; i++) 
 		{
 			Order randomParent = population.get(ModelConstants.RANDOM.nextInt(population.size()));
 			double randomParentFitness = materialCuttingProblem.calculateFitnessOfOrder(randomParent);
 
-			if(randomParentFitness > fittestParentFitness) 
+			if(randomParentFitness < fittestParentFitness) 
 			{
 				fittestParent = randomParent;
 				fittestParentFitness = randomParentFitness;
@@ -166,7 +166,7 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 		Order[] twoOffspring = {parentOne, parentTwo};
 
 		int startCopyIndex = ModelConstants.RANDOM.nextInt(parentOne.size());
-		
+
 		//Recombination
 		if(ModelConstants.RANDOM.nextDouble() < ModelConstants.RECOMBINATION_PROBABILITIY) 
 		{
@@ -189,9 +189,9 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 
 		//Keep track of Ordered lengths that still need to be added
 		ArrayList<Float> orderedLengthsNeeded = (ArrayList<Float>) materialCuttingProblem.allOrderLengths.clone();
-		
+
 		//In the event that the FirstParent isn't equal in size to the second parent
-	    //Extract a size proportional to the first parent
+		//Extract a size proportional to the first parent
 		int copyLengthFirstParent = firstParent.size()/2;
 		int firstParentIndex = startCopyIndex % firstParent.size();
 
@@ -270,7 +270,7 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 			//Add the new mutated cut activites to the order
 			order.addAll(materialCuttingProblem.generateRandomValidCutActivities(activityCutLengths));
 		}
-		
+
 		if(order.isComplete()) 
 		{
 			return order;
@@ -287,12 +287,11 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 	 */
 	private void evaluatePopulation(ArrayList<Order> population) 
 	{
-		for(int i = 0; i < population.size(); i++) 
+		for(Order individual : population) 
 		{
-			Order individual = population.get(i);
 			double individualFitness = materialCuttingProblem.calculateFitnessOfOrder(individual);
 
-			if(individualFitness > fittestIndividualFitness) 
+			if(individualFitness < fittestIndividualFitness) 
 			{
 				fittestIndividual = individual;
 				fittestIndividualFitness = individualFitness;
@@ -308,9 +307,9 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 	{
 		ArrayList<Order> survivors = new ArrayList<Order>(ModelConstants.POPULATION_SIZE);
 
-		while(survivors.size() < ModelConstants.POPULATION_SIZE) 
+		while(survivors.size() < ModelConstants.POPULATION_SIZE)
 		{
-			survivors.add(tournamentParentSelection(population));						
+			survivors.add(tournamentParentSelection(population));
 		}
 
 		if(ModelConstants.ELITISM) 

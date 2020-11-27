@@ -66,7 +66,7 @@ public class LocalSearch implements SearchAlgorithm {
 		Order bestNeighbour = bestNeighbourStepFunction(neighbourhood);
 		double bestNeighbourFitness = materialCuttingProblem.calculateFitnessOfOrder(bestNeighbour);
 
-		if(bestNeighbourFitness > bestOrderFitness) 
+		if(bestNeighbourFitness < bestOrderFitness) 
 		{
 			bestOrder = bestNeighbour;
 			bestOrderFitness = bestNeighbourFitness;
@@ -88,35 +88,35 @@ public class LocalSearch implements SearchAlgorithm {
 			int j = i + 1;
 			//for(int j = 1; j < order.size(); j++) 
 			//{
-				if(j > i) 
+			if(j > i) 
+			{
+				Order neighbour = order.clone();
+
+				//Sellect two activities to change
+				CutActivity activityOne = neighbour.get(i);
+				CutActivity activityTwo = neighbour.get(j);
+
+				//Remove them
+				neighbour.remove(activityOne);
+				neighbour.remove(activityTwo);
+
+				//Fill a activityCutLengths list with their lengths
+				ArrayList<Float> activityCutLengths = new ArrayList<Float>();
+				activityCutLengths.addAll(activityOne.getLengths());
+				activityCutLengths.addAll(activityTwo.getLengths());
+
+				//Create and add new CutActivities from activityCutLengths
+				neighbour.addAll(materialCuttingProblem.generateRandomValidCutActivities(activityCutLengths));
+
+				//Add neighbour to neighbourhood
+				if(neighbour.isComplete())
 				{
-					Order neighbour = order.clone();
-
-					//Sellect two activities to change
-					CutActivity activityOne = neighbour.get(i);
-					CutActivity activityTwo = neighbour.get(j);
-
-					//Remove them
-					neighbour.remove(activityOne);
-					neighbour.remove(activityTwo);
-
-					//Fill a activityCutLengths list with their lengths
-					ArrayList<Float> activityCutLengths = new ArrayList<Float>();
-					activityCutLengths.addAll(activityOne.getLengths());
-					activityCutLengths.addAll(activityTwo.getLengths());
-
-					//Create and add new CutActivities from activityCutLengths
-					neighbour.addAll(materialCuttingProblem.generateRandomValidCutActivities(activityCutLengths));
-
-					//Add neighbour to neighbourhood
-					if(neighbour.isComplete())
-					{
-						Neighbourhood.add(neighbour);
-					}
-					else
-					{
-						throw new OrderException("Tried to add order which is not complete." + neighbour.toString());
-					}
+					Neighbourhood.add(neighbour);
+				}
+				else
+				{
+					throw new OrderException("Tried to add order which is not complete." + neighbour.toString());
+				}
 				//}
 			}
 		}
@@ -132,13 +132,13 @@ public class LocalSearch implements SearchAlgorithm {
 	private Order bestNeighbourStepFunction(ArrayList<Order> Neighbourhood) 
 	{
 		Order bestNeighbour = null;
-		double bestNeighbourFitness = -Double.MAX_VALUE;
+		double bestNeighbourFitness = Double.MAX_VALUE;
 
 		for(Order neighbour : Neighbourhood) 
 		{
 			double neighbourFitness = materialCuttingProblem.calculateFitnessOfOrder(neighbour);
 
-			if(neighbourFitness > bestNeighbourFitness) 
+			if(neighbourFitness < bestNeighbourFitness) 
 			{
 				bestNeighbour = neighbour;
 				bestNeighbourFitness = neighbourFitness;
