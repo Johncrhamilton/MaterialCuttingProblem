@@ -6,6 +6,7 @@ import model.MCutProblem;
 import model.SEARCHMETHOD;
 import model.SearchAlgorithm;
 import model.search.algorithms.BaselineEvolutionAlgorithm;
+import model.search.algorithms.EvolutionAlgorithm;
 import model.search.algorithms.LocalSearch;
 import model.search.algorithms.RandomSearch;
 import model.Order;
@@ -65,6 +66,8 @@ public class Main {
 		case BASELINE_EVOLUTION_SEARCH:
 			selectedAlgorithm = new BaselineEvolutionAlgorithm(materialCuttingProblem);
 			break;
+		case EVOLUTION_SEARCH:
+			selectedAlgorithm = new EvolutionAlgorithm(materialCuttingProblem);
 		default:
 			throw new UnsupportedOperationException("Search method " + searchMethod.toString() + " is not supported.");	
 		}
