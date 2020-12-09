@@ -30,7 +30,6 @@ public class RandomSearch implements SearchAlgorithm {
 				oneIteration();
 				currentIteration++;
 			}
-			System.out.println("Number of iterations: " + currentIteration);
 		}
 		else 
 		{

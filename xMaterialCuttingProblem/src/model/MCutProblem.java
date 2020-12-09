@@ -7,13 +7,18 @@ import java.util.Iterator;
 
 public class MCutProblem {
 
+	//All ordered lengths
 	public final ArrayList<Float> allOrderLengths;
+
 	//Unique lengths as floats and costs as floats
 	private final HashMap<Float, Float> STOCK_LENGTHS_AND_COSTS;
+
 	//Unique lengths as floats and quantities as integers
 	private final HashMap<Float, Integer> ORDERED_LENGTHS_AND_QUANTITIES;
-	
-	private float shortestOrderedLength = Float.MAX_VALUE;
+
+	private float shortestOrderedLength = Float.MAX_VALUE;	
+	private float shortestStockLength = Float.MAX_VALUE;
+	private float longestStockLength = -Float.MAX_VALUE;
 
 	public MCutProblem(HashMap<Float, Float> stockLengthsAndCosts, HashMap<Float, Integer> orderedLengthsAndQuantities) 
 	{
@@ -21,14 +26,14 @@ public class MCutProblem {
 		STOCK_LENGTHS_AND_COSTS = stockLengthsAndCosts;
 		//Ordered lengths' and quantities constrained by hashmap
 		ORDERED_LENGTHS_AND_QUANTITIES = orderedLengthsAndQuantities;
-		
+
 		//Create new Arraylist that is the total ORDERED_PIECE_LENGTHS * ORDERED_PIECE_QUANTITIES
 		allOrderLengths = new ArrayList<Float>();
 
-		//For each length ordered
+		//Add each ordered length to the allOrderLengths collection and Find the shortest ordered length
 		for(Float orderedLength : orderedLengthsAndQuantities.keySet()) 
 		{
-			//Find the shortest ordered length
+			//Check if this length is the shortest
 			if(orderedLength < shortestOrderedLength) 
 			{
 				shortestOrderedLength = orderedLength;
@@ -38,6 +43,26 @@ public class MCutProblem {
 			for(int j = 0; j < orderedLengthsAndQuantities.get(orderedLength); j++) 
 			{
 				allOrderLengths.add(orderedLength);
+			}
+		}
+
+		ArrayList<Float> stockLengths = new ArrayList<Float>(STOCK_LENGTHS_AND_COSTS.keySet());	
+
+		//Find the shortest stock length	
+		for(int i = 0; i < stockLengths.size(); i++) 
+		{
+			if(stockLengths.get(i) < shortestStockLength) 
+			{
+				shortestStockLength = stockLengths.get(i);
+			}			
+		}
+
+		//Find the longest stock length		
+		for(int i = 0; i < stockLengths.size(); i++) 
+		{
+			if(stockLengths.get(i) > longestStockLength) 
+			{
+				longestStockLength = stockLengths.get(i);
 			}
 		}
 	}
@@ -58,7 +83,7 @@ public class MCutProblem {
 		}
 		else 
 		{
-			throw new OrderException("Tried to add order which is not complete." + randomValidOrder.toString());
+			throw new OrderException("Tried to add order which is not valid. " + randomValidOrder.toString());
 		}
 	}
 
@@ -72,42 +97,43 @@ public class MCutProblem {
 	{
 		ArrayList<CutActivity> cutActivities = new ArrayList<CutActivity>();
 		ArrayList<Float> stockLengths = new ArrayList<Float>(STOCK_LENGTHS_AND_COSTS.keySet());
-		
+
 		//Randomly shuffle all the ordered lengths
 		Collections.shuffle(orderedLengths);
-		
+
 		//While there are still lengths left keep creating Cut Activities
 		while(orderedLengths.size() > 0)
 		{
 			//Add a cut activity with a random stockLength
 			cutActivities.add(randomlyCreateCutActivity(stockLengths.get(ModelConstants.RANDOM.nextInt(stockLengths.size())), orderedLengths));
 		}
-		
+
 		return cutActivities;
 	} 
-	
+
 	/**
 	 * Create CutActivity randomly with orderedLengths
 	 * This method will remove lengths from orderedLengths to add to the CutActivity
 	 * @return CutActivity
 	 */
 	public CutActivity randomlyCreateCutActivity(float stockLength, ArrayList<Float> orderedLengths) 
-	{
+	{		
 		//Create new Cut Activity of a random stock length
 		CutActivity cutActivity = new CutActivity(stockLength);
-		
+
 		int randomCutActivityMaxAttempts = ModelConstants.RANDOM_CUT_ACTIVITY_MAX_ATTEMPTS;
 
 		//Populate Cut Activity with lengths from available lengths
 		while(cutActivity.getAvailableSpace() > 0 && randomCutActivityMaxAttempts > 0)
 		{
+			//If no ordered lengths are left
 			if(orderedLengths.size() <= 0) 
 			{
 				break;
 			}
-			
+
 			int randomIndex = ModelConstants.RANDOM.nextInt(orderedLengths.size());
-			
+
 			//Add length
 			if(cutActivity.add(orderedLengths.get(randomIndex))) 
 			{
@@ -118,8 +144,15 @@ public class MCutProblem {
 				randomCutActivityMaxAttempts--;
 			}
 		}
-		
-		return cutActivity;
+
+		if(isValidCutActivity(cutActivity))
+		{
+			return cutActivity;
+		}
+		else 
+		{
+			throw new CutActivityException("CutActivity is not valid. " + cutActivity.toString());
+		}
 	}
 
 	/**
@@ -136,20 +169,61 @@ public class MCutProblem {
 		for(Iterator<Float> iterator = orderedLengths.iterator(); iterator.hasNext();)
 		{
 			//If not possible to add more lengths
-			if(cutActivity.getStockLength() < shortestOrderedLength) 
+			if(cutActivity.getAvailableSpace() < shortestOrderedLength) 
 			{
 				break;
 			}
-			
+
 			//Add length
 			if(cutActivity.add(iterator.next())) 
 			{
 				iterator.remove();
 			}
 		}
-		
-		return cutActivity;
+
+		if(isValidCutActivity(cutActivity))
+		{
+			return cutActivity;
+		}
+		else 
+		{
+			throw new CutActivityException("CutActivity is not valid. " + cutActivity.toString());
+		}
 	}
+
+	/**
+	 * Check whether CutActivity is valid
+	 * @param cutActivity
+	 * @return
+	 */
+	public boolean isValidCutActivity(CutActivity cutActivity) 
+	{
+		//Check available space
+		if(cutActivity.getAvailableSpace() < 0) 
+		{
+			return false;
+		}
+
+		//Check stock length
+		if(!STOCK_LENGTHS_AND_COSTS.keySet().contains(cutActivity.getStockLength())) 
+		{
+			return false;			
+		}
+
+		//Check contents
+		float availableSpace = cutActivity.getStockLength();
+		for(float cutLength : cutActivity.getLengths()) 
+		{
+			availableSpace -= cutLength;
+		}
+		if(availableSpace != cutActivity.getAvailableSpace()) 
+		{
+			return false;			
+		}
+
+		return true;
+	}
+
 	/**
 	 * Calculate the fitness (cost) for a given agent
 	 * @param order
@@ -179,10 +253,28 @@ public class MCutProblem {
 
 	/**
 	 * Get Stock Lengths And Costs
-	 * @return StockLengthsAndCosts
+	 * @return OrderedLengthsAndQuantities
 	 */
 	public HashMap<Float, Float> getStockLengthsAndCosts() 
 	{
 		return STOCK_LENGTHS_AND_COSTS;
+	}
+
+	/**
+	 * Get ShortestStockLength
+	 * @return shortestStockLength
+	 */
+	public float getShortestStockLength() 
+	{
+		return shortestStockLength;
+	}
+
+	/**
+	 * Get LongestStockLength
+	 * @return longestStockLength
+	 */
+	public float getLongestStockLength() 
+	{
+		return longestStockLength;
 	}
 }

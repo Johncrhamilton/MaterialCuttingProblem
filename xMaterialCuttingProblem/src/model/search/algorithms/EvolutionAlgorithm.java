@@ -25,9 +25,10 @@ public class EvolutionAlgorithm  implements SearchAlgorithm {
 
 	public Order bestOrder()
 	{
+		fittestIndividual = null;
+		fittestIndividualFitness = Double.MAX_VALUE;
+		
 		currentPopulation = initialisation();
-
-		System.out.println("Starting individual fitness: " + fittestIndividualFitness);
 
 		if(ModelConstants.LIMITED_ITERATIONS) 
 		{
@@ -37,7 +38,6 @@ public class EvolutionAlgorithm  implements SearchAlgorithm {
 				oneGeneration();
 				currentIteration++;
 			}
-			System.out.println("Number of iterations: " + currentIteration);
 		}
 		else 
 		{
@@ -53,6 +53,9 @@ public class EvolutionAlgorithm  implements SearchAlgorithm {
 				currentTime = java.lang.System.currentTimeMillis();
 			}
 		}
+		
+		//Evaluate the population
+		evaluatePopulation(currentPopulation);
 
 		return fittestIndividual;
 	}
@@ -65,21 +68,9 @@ public class EvolutionAlgorithm  implements SearchAlgorithm {
 	{
 		ArrayList<Order> initialPopulation = new ArrayList<Order>(ModelConstants.POPULATION_SIZE);
 
-		fittestIndividual = null;
-		fittestIndividualFitness = Double.MAX_VALUE;
-
 		for(int i = 0; i < ModelConstants.POPULATION_SIZE; i++) 
 		{
-			Order individual = materialCuttingProblem.generateRandomValidOrder();
-			double individualFitness = materialCuttingProblem.calculateFitnessOfOrder(individual);
-
-			if(individualFitness < fittestIndividualFitness) 
-			{
-				fittestIndividual = individual;
-				fittestIndividualFitness = individualFitness;
-			}
-
-			initialPopulation.add(individual);
+			initialPopulation.add(materialCuttingProblem.generateRandomValidOrder());
 		}
 
 		return initialPopulation;
@@ -90,11 +81,11 @@ public class EvolutionAlgorithm  implements SearchAlgorithm {
 	 */
 	private void oneGeneration()
 	{
+		//Evaluate Individuals and update fittestIndividual for Centre of Mass
+		evaluatePopulation(currentPopulation);
+		
 		//Parent Selection and offspring creation through Recombination and mutation
-		ArrayList<Order> offspringPopulation = produceOffspring(currentPopulation);
-
-		//Evaluate Individuals
-		evaluatePopulation(offspringPopulation);
+		ArrayList<Order> offspringPopulation = produceOffspring();
 
 		//Survivor Selection
 		ArrayList<Order> survivorPopulation = generationalSurvivorSelection(offspringPopulation);
@@ -109,15 +100,16 @@ public class EvolutionAlgorithm  implements SearchAlgorithm {
 	 * @param parents
 	 * @return offspring population
 	 */
-	private ArrayList<Order> produceOffspring(ArrayList<Order> population) 
+	private ArrayList<Order> produceOffspring() 
 	{
 		ArrayList<Order> offspring = new ArrayList<Order>(ModelConstants.OFFSPRING_POPULATION_SIZE);
+		ArrayList<Order> parentPopulation = centreOfMassSelection();
 
 		while(offspring.size() < ModelConstants.OFFSPRING_POPULATION_SIZE) 
 		{
 			//Select two parents
-			Order parentOne = tournamentParentSelection(population);
-			Order parentTwo = tournamentParentSelection(population);
+			Order parentOne = parentPopulation.get(ModelConstants.RANDOM.nextInt(parentPopulation.size()));
+			Order parentTwo = parentPopulation.get(ModelConstants.RANDOM.nextInt(parentPopulation.size()));
 
 			//Create two Offspring through recombination
 			Order[] twoOffspring = recombination(parentOne, parentTwo);
@@ -131,28 +123,101 @@ public class EvolutionAlgorithm  implements SearchAlgorithm {
 	}
 
 	/**
-	 * Tournament Selection: Look at a random TOURNAMENT_SELECTIVE_SAMPLE number of random parents (Orders) and pick the best one
+	 * Creates a parent population around the Centre Of Mass Individual (Fittest Individual)
 	 * @param population
-	 * @return fittestParent
+	 * @return Parent Population
 	 */
-	private Order tournamentParentSelection(ArrayList<Order> population) 
+	private ArrayList<Order> centreOfMassSelection()
 	{
-		Order fittestParent = null;
-		double fittestParentFitness = Double.MAX_VALUE;
+		//The centreOfMass is the fittestIndividual and the centreOfMassPopulation is built around this individual
+		ArrayList<Order> centreOfMassPopulation = new ArrayList<Order>(ModelConstants.CENTRE_OF_MASS_NEIGHBOURHOOD_SIZE);
+		Order centreOfMass = fittestIndividual;
 
-		for(int i = 0; i < ModelConstants.TOURNAMENT_SELECTIVE_SAMPLE; i++) 
+		//Stock lengths, shortestStockLength and longestStockLength for reference in formula
+		ArrayList<Float> stockLengths = new ArrayList<Float>(materialCuttingProblem.getStockLengthsAndCosts().keySet());
+		float shortestStockLength = materialCuttingProblem.getShortestStockLength();
+		float longestStockLength = materialCuttingProblem.getLongestStockLength();
+
+		//Keep track of the ith new individual
+		int index = 1;
+
+		//Create neighbours to the given order
+		while(centreOfMassPopulation.size() < ModelConstants.CENTRE_OF_MASS_NEIGHBOURHOOD_SIZE) 
 		{
-			Order randomParent = population.get(ModelConstants.RANDOM.nextInt(population.size()));
-			double randomParentFitness = materialCuttingProblem.calculateFitnessOfOrder(randomParent);
+			Order individual = new Order(materialCuttingProblem.getOrderedLengthsAndQuantities());
 
-			if(randomParentFitness < fittestParentFitness) 
+			//Ordered lengths that need to be added to new individual
+			ArrayList<Float> orderedLengthsNeeded = (ArrayList<Float>) materialCuttingProblem.allOrderLengths.clone();
+			Collections.shuffle(orderedLengthsNeeded);
+
+			//Calculate and convert new stocklengths that will be used to create cutActivities for the new individual
+			ArrayList<Float> newStockLengths = new ArrayList<Float>(centreOfMass.size());
+
+			for(int i = 0; i < centreOfMass.size(); i++) 
 			{
-				fittestParent = randomParent;
-				fittestParentFitness = randomParentFitness;
+				float calculatedStockLength;
+
+				//If true try increase the Stock Length teir else try decrease the Stock Length teir
+				if(ModelConstants.RANDOM.nextFloat() < ModelConstants.CENTRE_OF_MASS_POSITIVE_TO_NEGATIVE_DISTRIBUTION) 
+				{
+					//Increase formula: newStockLength = currentStockLength + (UpperBoundStockLength * Random(0,1) / index)
+					calculatedStockLength = centreOfMass.get(i).getStockLength() + ((longestStockLength * ModelConstants.RANDOM.nextFloat()) / index);
+				}
+				else 
+				{
+					//Decrease formula: newStockLength = currentStockLength - (UpperBoundStockLength * Random(0,1) / index)
+					calculatedStockLength = centreOfMass.get(i).getStockLength() - ((shortestStockLength * ModelConstants.RANDOM.nextFloat()) / index);
+				}
+
+				//Convert the calculated StockLength into a valid StockLength
+				float smallestDifference = Float.MAX_VALUE;
+				float selectedStockLength = 0f;
+
+				for(int j = 0; j < stockLengths.size(); j++)
+				{
+					float difference = Math.abs(calculatedStockLength - stockLengths.get(j));
+					if(difference < smallestDifference) 
+					{
+						selectedStockLength = stockLengths.get(j);
+						smallestDifference = difference;
+					}
+				}
+
+				newStockLengths.add(selectedStockLength);
 			}
+
+			//Use the newStockLengths to create a new individual
+			for(int i = 0; i < newStockLengths.size(); i++) 
+			{
+				//If there aren't any ordered lengths left to add
+				if(!(orderedLengthsNeeded.size() > 0))
+				{
+					break;
+				}
+
+				individual.add(materialCuttingProblem.createCutActivity(newStockLengths.get(i), orderedLengthsNeeded));
+			}
+
+			//If there are any left over ordered lengths, add them in as new random valid cut activities
+			if(orderedLengthsNeeded.size() > 0)
+			{
+				individual.addAll(materialCuttingProblem.generateRandomValidCutActivities(orderedLengthsNeeded));
+			}			
+
+			//Add neighbour to neighbourhood
+			if(individual.isComplete())
+			{
+				centreOfMassPopulation.add(individual);
+			}
+			else
+			{
+				throw new OrderException("Tried to add order which is not valid. " + individual.toString());
+			}
+
+			index++;
 		}
 
-		return fittestParent;
+		return centreOfMassPopulation;
 	}
 
 	/**
@@ -219,7 +284,7 @@ public class EvolutionAlgorithm  implements SearchAlgorithm {
 		//Copy in second parent's cut activities
 		for(int i = 0; i < copyLengthSecondParent; i++) 
 		{
-			//If there aren't any ordered lengths to add
+			//If there aren't any ordered lengths left to add
 			if(!(orderedLengthsNeeded.size() > 0))
 			{
 				break;
@@ -230,7 +295,7 @@ public class EvolutionAlgorithm  implements SearchAlgorithm {
 			secondParentIndex = (secondParentIndex + 1) % secondParent.size();
 		}
 
-		//If there are any left over ordered lengths add them in new random valid cut activities
+		//If there are any left over ordered lengths, add them in as new random valid cut activities
 		if(orderedLengthsNeeded.size() > 0)
 		{
 			child.addAll(materialCuttingProblem.generateRandomValidCutActivities(orderedLengthsNeeded));
@@ -242,7 +307,7 @@ public class EvolutionAlgorithm  implements SearchAlgorithm {
 		}
 		else 
 		{
-			throw new OrderException("Tried to add order which is not complete." + child.toString());
+			throw new OrderException("Tried to add order which is not valid. " + child.toString());
 		}
 	}
 
@@ -277,7 +342,7 @@ public class EvolutionAlgorithm  implements SearchAlgorithm {
 		}
 		else 
 		{
-			throw new OrderException("Tried to add order which is not complete." + order.toString());
+			throw new OrderException("Tried to add order which is not valid. " + order.toString());
 		}
 	}
 
@@ -312,12 +377,37 @@ public class EvolutionAlgorithm  implements SearchAlgorithm {
 			survivors.add(tournamentParentSelection(population));
 		}
 
-		if(ModelConstants.ELITISM) 
+		if(ModelConstants.ELITISM)
 		{
 			survivors.remove(ModelConstants.RANDOM.nextInt(survivors.size()));
 			survivors.add(fittestIndividual);
 		}
 
 		return survivors;
+	}
+
+	/**
+	 * Tournament Selection: Look at a random TOURNAMENT_SELECTIVE_SAMPLE number of random parents (Orders) and pick the best one
+	 * @param population
+	 * @return fittestParent
+	 */
+	private Order tournamentParentSelection(ArrayList<Order> population) 
+	{
+		Order fittestParent = null;
+		double fittestParentFitness = Double.MAX_VALUE;
+
+		for(int i = 0; i < ModelConstants.TOURNAMENT_SELECTIVE_SAMPLE; i++) 
+		{
+			Order randomParent = population.get(ModelConstants.RANDOM.nextInt(population.size()));
+			double randomParentFitness = materialCuttingProblem.calculateFitnessOfOrder(randomParent);
+
+			if(randomParentFitness < fittestParentFitness) 
+			{
+				fittestParent = randomParent;
+				fittestParentFitness = randomParentFitness;
+			}
+		}
+
+		return fittestParent;
 	}
 }

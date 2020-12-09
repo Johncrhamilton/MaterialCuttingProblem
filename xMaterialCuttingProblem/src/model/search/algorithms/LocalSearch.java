@@ -34,7 +34,6 @@ public class LocalSearch implements SearchAlgorithm {
 				oneIteration();
 				currentIteration++;
 			}
-			System.out.println("Number of iterations: " + currentIteration);
 		}
 		else 
 		{
@@ -82,43 +81,41 @@ public class LocalSearch implements SearchAlgorithm {
 	{
 		ArrayList<Order> Neighbourhood = new ArrayList<Order>(order.size());
 
+		int index = 0;
+		
 		//Create neighbours to the given order
-		for(int i = 0; i < order.size() - 1; i++) 
+		while(Neighbourhood.size() < ModelConstants.NEIGHBOURHOOD_SIZE) 
 		{
-			int j = i + 1;
-			//for(int j = 1; j < order.size(); j++) 
-			//{
-			if(j > i) 
+			int nextIndex = (index + 1) % order.size();
+			Order neighbour = order.clone();
+
+			//Sellect two activities to change
+			CutActivity activityOne = neighbour.get(index);
+			CutActivity activityTwo = neighbour.get(nextIndex);
+
+			//Remove them
+			neighbour.remove(activityOne);
+			neighbour.remove(activityTwo);
+
+			//Fill a activityCutLengths list with their lengths
+			ArrayList<Float> activityCutLengths = new ArrayList<Float>();
+			activityCutLengths.addAll(activityOne.getLengths());
+			activityCutLengths.addAll(activityTwo.getLengths());
+
+			//Create and add new CutActivities from activityCutLengths
+			neighbour.addAll(materialCuttingProblem.generateRandomValidCutActivities(activityCutLengths));
+
+			//Add neighbour to neighbourhood
+			if(neighbour.isComplete())
 			{
-				Order neighbour = order.clone();
-
-				//Sellect two activities to change
-				CutActivity activityOne = neighbour.get(i);
-				CutActivity activityTwo = neighbour.get(j);
-
-				//Remove them
-				neighbour.remove(activityOne);
-				neighbour.remove(activityTwo);
-
-				//Fill a activityCutLengths list with their lengths
-				ArrayList<Float> activityCutLengths = new ArrayList<Float>();
-				activityCutLengths.addAll(activityOne.getLengths());
-				activityCutLengths.addAll(activityTwo.getLengths());
-
-				//Create and add new CutActivities from activityCutLengths
-				neighbour.addAll(materialCuttingProblem.generateRandomValidCutActivities(activityCutLengths));
-
-				//Add neighbour to neighbourhood
-				if(neighbour.isComplete())
-				{
-					Neighbourhood.add(neighbour);
-				}
-				else
-				{
-					throw new OrderException("Tried to add order which is not complete." + neighbour.toString());
-				}
-				//}
+				Neighbourhood.add(neighbour);
 			}
+			else
+			{
+				throw new OrderException("Tried to add order which is not valid. " + neighbour.toString());
+			}
+			
+			index = (index + 1) % order.size();
 		}
 
 		return Neighbourhood;			

@@ -27,8 +27,6 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 	{
 		currentPopulation = initialisation();
 
-		System.out.println("Starting individual fitness: " + fittestIndividualFitness);
-
 		if(ModelConstants.LIMITED_ITERATIONS) 
 		{
 			int currentIteration = 0;
@@ -37,7 +35,6 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 				oneGeneration();
 				currentIteration++;
 			}
-			System.out.println("Number of iterations: " + currentIteration);
 		}
 		else 
 		{
@@ -168,7 +165,7 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 		int startCopyIndex = ModelConstants.RANDOM.nextInt(parentOne.size());
 
 		//Recombination
-		if(ModelConstants.RANDOM.nextDouble() < ModelConstants.RECOMBINATION_PROBABILITIY) 
+		if(ModelConstants.RANDOM.nextDouble() < ModelConstants.BASE_RECOMBINATION_PROBABILITIY) 
 		{
 			twoOffspring[0] = orderOneCrossover(parentOne, parentTwo, startCopyIndex);
 			twoOffspring[1] = orderOneCrossover(parentTwo, parentOne, startCopyIndex);	
@@ -242,7 +239,7 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 		}
 		else 
 		{
-			throw new OrderException("Tried to add order which is not complete." + child.toString());
+			throw new OrderException("Tried to add order which is not valid. " + child.toString());
 		}
 	}
 
@@ -254,7 +251,7 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 	private Order mutation(Order order) 
 	{
 		//Mutation
-		if(ModelConstants.RANDOM.nextDouble() < ModelConstants.MUTATION_PROBABILITY) 
+		if(ModelConstants.RANDOM.nextDouble() < ModelConstants.BASE_MUTATION_PROBABILITY) 
 		{
 			//Randomly select two cut activites from order and remove the two cut activites from order
 			CutActivity randomActivityOne = order.get(ModelConstants.RANDOM.nextInt(order.size()));			
@@ -277,7 +274,7 @@ public class BaselineEvolutionAlgorithm  implements SearchAlgorithm {
 		}
 		else 
 		{
-			throw new OrderException("Tried to add order which is not complete." + order.toString());
+			throw new OrderException("Tried to add order which is not valid. " + order.toString());
 		}
 	}
 
