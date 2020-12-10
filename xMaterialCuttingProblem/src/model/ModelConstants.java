@@ -18,16 +18,16 @@ public class ModelConstants {
 	//General Evolution Algorithm Constants
 	public static final int POPULATION_SIZE = 100;
 	public static final int OFFSPRING_POPULATION_SIZE = 100;
-	public static final int TOURNAMENT_SELECTIVE_SAMPLE = 5;
+	public static final int TOURNAMENT_SELECTIVE_SAMPLE = 6;
 	public static final boolean ELITISM = true;
 	
 	//Evolution Algorithm Constants for Baseline
 	public static final double BASE_RECOMBINATION_PROBABILITIY = 1;
-	public static final double BASE_MUTATION_PROBABILITY = 0.75;
+	public static final double BASE_MUTATION_PROBABILITY = 0.5;
 	
 	//Evolution Algorithm Constants for my Implementation
 	public static final int CENTRE_OF_MASS_NEIGHBOURHOOD_SIZE = 100;
 	public static final double CENTRE_OF_MASS_POSITIVE_TO_NEGATIVE_DISTRIBUTION = 0.5; 
-	public static final double RECOMBINATION_PROBABILITIY = 0.95;
-	public static final double MUTATION_PROBABILITY = 0.05;
+	public static final double RECOMBINATION_PROBABILITIY = 1;
+	public static final double MUTATION_PROBABILITY = 0.25;
 }

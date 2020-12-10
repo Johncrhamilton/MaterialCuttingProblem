@@ -45,15 +45,15 @@ public class Main {
 
 		MCutProblem materialCuttingProblem = createMaterialCuttingProblem(stockLengths, stockCosts, orderLengths, orderQuantities);
 
-		runExperiment(materialCuttingProblem, SEARCHMETHOD.RANDOM_SEARCH, 1);
-		runExperiment(materialCuttingProblem, SEARCHMETHOD.LOCAL_SEARCH, 1);
-		runExperiment(materialCuttingProblem, SEARCHMETHOD.BASELINE_EVOLUTION_SEARCH, 1);
-		runExperiment(materialCuttingProblem, SEARCHMETHOD.EVOLUTION_SEARCH, 1);
+		//runExperiment(materialCuttingProblem, SEARCHMETHOD.RANDOM_SEARCH, 1);
+		//runExperiment(materialCuttingProblem, SEARCHMETHOD.LOCAL_SEARCH, 1);
+		//runExperiment(materialCuttingProblem, SEARCHMETHOD.BASELINE_EVOLUTION_SEARCH, 1);
+		//runExperiment(materialCuttingProblem, SEARCHMETHOD.EVOLUTION_SEARCH, 1);
 
-		//runExperiment(materialCuttingProblem, SEARCHMETHOD.RANDOM_SEARCH, 30);
-		//runExperiment(materialCuttingProblem, SEARCHMETHOD.LOCAL_SEARCH, 30);
-		//runExperiment(materialCuttingProblem, SEARCHMETHOD.BASELINE_EVOLUTION_SEARCH, 30);
-		//runExperiment(materialCuttingProblem, SEARCHMETHOD.EVOLUTION_SEARCH, 30);
+		runExperiment(materialCuttingProblem, SEARCHMETHOD.RANDOM_SEARCH, 30);
+		runExperiment(materialCuttingProblem, SEARCHMETHOD.LOCAL_SEARCH, 30);
+		runExperiment(materialCuttingProblem, SEARCHMETHOD.BASELINE_EVOLUTION_SEARCH, 30);
+		runExperiment(materialCuttingProblem, SEARCHMETHOD.EVOLUTION_SEARCH, 30);
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class Main {
 			double bestOrderFitness = evaluateMaterialCuttingProblem(materialCuttingProblem, searchMethod);
 			total += bestOrderFitness;
 
-			System.out.println((i + 1) + " Best Order Fitness: " + bestOrderFitness);
+			//System.out.println((i + 1) + " Best Order Fitness: " + bestOrderFitness);
 		}
 
 		if(runs > 0) 
