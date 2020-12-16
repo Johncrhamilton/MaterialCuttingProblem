@@ -7,7 +7,7 @@ public class ModelConstants {
 	//General Constants
 	public static final boolean LIMITED_ITERATIONS = true;
 	public static final int ITERATION_LIMIT = 100;
-	public static final long TIME_LIMIT = 5000;
+	public static final long TIME_LIMIT = 2000;
 	
 	public static final Random RANDOM = new Random();
 	public static final int RANDOM_CUT_ACTIVITY_MAX_ATTEMPTS = 5;

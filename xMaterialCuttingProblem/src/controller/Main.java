@@ -50,8 +50,8 @@ public class Main {
 		//runExperiment(materialCuttingProblem, SEARCHMETHOD.BASELINE_EVOLUTION_SEARCH, 1);
 		//runExperiment(materialCuttingProblem, SEARCHMETHOD.EVOLUTION_SEARCH, 1);
 
-		runExperiment(materialCuttingProblem, SEARCHMETHOD.RANDOM_SEARCH, 30);
-		runExperiment(materialCuttingProblem, SEARCHMETHOD.LOCAL_SEARCH, 30);
+		//runExperiment(materialCuttingProblem, SEARCHMETHOD.RANDOM_SEARCH, 30);
+		//runExperiment(materialCuttingProblem, SEARCHMETHOD.LOCAL_SEARCH, 30);
 		runExperiment(materialCuttingProblem, SEARCHMETHOD.BASELINE_EVOLUTION_SEARCH, 30);
 		runExperiment(materialCuttingProblem, SEARCHMETHOD.EVOLUTION_SEARCH, 30);
 	}
@@ -73,6 +73,7 @@ public class Main {
 			total += bestOrderFitness;
 
 			//System.out.println((i + 1) + " Best Order Fitness: " + bestOrderFitness);
+			System.out.println(bestOrderFitness);
 		}
 
 		if(runs > 0) 
@@ -80,7 +81,7 @@ public class Main {
 			total = total / runs;
 		}
 
-		System.out.println("Average Best Order Fitness: " + total + "\n");
+		System.out.println("Average Best Order Fitness: " + total  + " Runs: " + runs + "\n");
 	}
 
 	/**
