@@ -26,8 +26,8 @@ public class ModelConstants {
 	public static final double BASE_MUTATION_PROBABILITY = 0.5;
 	
 	//Evolution Algorithm Constants for my Implementation
-	public static final int CENTRE_OF_MASS_NEIGHBOURHOOD_SIZE = 100;
-	public static final double CENTRE_OF_MASS_POSITIVE_TO_NEGATIVE_DISTRIBUTION = 0.5; 
+	public static final int CENTRE_OF_MASS_NEIGHBOURHOOD_SIZE = 25;
+	public static final double CENTRE_OF_MASS_POSITIVE_TO_NEGATIVE_DISTRIBUTION = 0.5;
 	public static final double RECOMBINATION_PROBABILITIY = 1;
-	public static final double MUTATION_PROBABILITY = 0.25;
+	public static final double MUTATION_PROBABILITY = 0.5;
 }

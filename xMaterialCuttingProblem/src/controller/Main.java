@@ -52,7 +52,7 @@ public class Main {
 
 		//runExperiment(materialCuttingProblem, SEARCHMETHOD.RANDOM_SEARCH, 30);
 		//runExperiment(materialCuttingProblem, SEARCHMETHOD.LOCAL_SEARCH, 30);
-		runExperiment(materialCuttingProblem, SEARCHMETHOD.BASELINE_EVOLUTION_SEARCH, 30);
+		//runExperiment(materialCuttingProblem, SEARCHMETHOD.BASELINE_EVOLUTION_SEARCH, 30);
 		runExperiment(materialCuttingProblem, SEARCHMETHOD.EVOLUTION_SEARCH, 30);
 	}
 
